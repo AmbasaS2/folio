@@ -280,6 +280,9 @@ function translateSettingsText(container) {
     for (const element of container.querySelectorAll('[data-folio-i18n]')) {
         element.textContent = tr(element.getAttribute('data-folio-i18n'));
     }
+    for (const option of container.querySelectorAll('[data-folio-count]')) {
+        option.textContent = tr('unit.count', Number(option.getAttribute('data-folio-count')));
+    }
 }
 
 function createElement(tagName, className = '', text = '') {
