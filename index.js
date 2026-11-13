@@ -165,6 +165,123 @@ function safeContext() {
     }
 }
 
+const UI_ENGLISH = Object.freeze({
+  "sort.recent": "Recently chatted",
+  "sort.name-asc": "Name (A–Z)",
+  "sort.name-desc": "Name (Z–A)",
+  "sort.chat-size-desc": "Most chat data",
+  "sort.random": "Random order",
+  "chatSort.title-desc": "Title (Z–A)",
+  "chatSort.title-asc": "Title (A–Z)",
+  "character.unnamed": "Unnamed character",
+  "filter.tags": "Tags",
+  "filter.all": "All",
+  "filter.selected": "Character tags: {0} selected",
+  "filter.allSelected": "Character tags: all",
+  "menu.default": "Menu",
+  "page.previous": "{0}: previous page",
+  "page.next": "{0}: next page",
+  "page.characters": "Characters",
+  "page.chats": "Chats",
+  "card.openChats": "Open {0}'s chats",
+  "card.pinMenu": "Pin menu for {0}",
+  "card.unpin": "Unpin",
+  "card.pin": "Pin to top",
+  "card.tags": "Tags for {0}",
+  "card.editNote": "Edit note for {0}",
+  "card.hiddenTags": "{0} hidden tags: {1}",
+  "empty.searchCharacters": "No matching characters.",
+  "empty.characters": "No characters to display.",
+  "shortcuts.label": "SillyTavern shortcuts",
+  "sort.characterLabel": "Folio character sort order",
+  "sort.searchPlaceholder": "Search",
+  "sort.searchLabel": "Search character names",
+  "filter.tagLabel": "Filter character tags",
+  "filter.tagMenu": "Select character tags",
+  "page.characterLabel": "Character pages",
+  "settings.cleanupTitle": "Clear Folio's saved data?",
+  "settings.cleanupMessage": "Settings, sorting preferences, pins, and notes will be deleted and reset to defaults. Characters and chats will not be deleted.",
+  "drawer.sortLabel": "Sort chats for {0}",
+  "drawer.close": "Close",
+  "search.chats": "Search chat titles",
+  "empty.chats": "No saved chats yet.",
+  "empty.chatSearch": "No matching chat titles.",
+  "chat.open": "Open {0}. Long-press for actions{1}",
+  "chat.pinnedSuffix": ". Pinned",
+  "chat.menu": "Chat menu for {0}",
+  "chat.rename": "Rename",
+  "chat.delete": "Delete",
+  "chat.deleteLabel": "Delete {0}",
+  "chat.deleteTitle": "Delete chat",
+  "chat.newChat": "Start new chat",
+  "chat.pin": "Pin chat",
+  "chat.unpin": "Unpin chat",
+  "chat.pageLabel": "Chat pages",
+  "delete.title": "Delete this chat?",
+  "delete.message": "“{0}” cannot be recovered after deletion.",
+  "delete.fallback": "Delete “{0}”?\nThis cannot be undone.",
+  "rename.title": "Rename chat",
+  "rename.prompt": "Enter a new chat title.",
+  "action.save": "Save",
+  "action.cancel": "Cancel",
+  "rename.unavailable": "Cannot rename this chat.",
+  "rename.empty": "Enter at least one character for the chat name.",
+  "rename.duplicate": "A chat with this name already exists.",
+  "error.characterMissing": "Character not found.",
+  "error.rename": "Could not rename the chat.",
+  "error.delete": "Could not delete the chat.",
+  "error.loadChats": "Could not load chats.",
+  "error.startChat": "Could not start a new chat.",
+  "error.openChat": "Could not open the chat.",
+  "loading.chats": "Loading chats…",
+  "memo.title": "{0} · note",
+  "memo.placeholder": "A short note about this character",
+  "memo.label": "Note for {0}, up to {1} characters",
+  "settings.enabled": "Enable Folio",
+  "settings.quality": "Portrait quality",
+  "settings.qualityLow": "Low-resolution thumbnail",
+  "settings.qualityHigh": "High-resolution original",
+  "settings.ratio": "Portrait ratio",
+  "settings.ratioPortrait": "Portrait (2:3)",
+  "settings.ratioSquare": "Square (1:1)",
+  "settings.columns": "Portraits per row",
+  "settings.desktop": "Desktop",
+  "settings.mobile": "Mobile devices",
+  "unit.count": "{0} items",
+  "settings.characterPage": "Portraits per page",
+  "settings.chatPage": "Chats per page",
+  "settings.font": "Font size",
+  "settings.corner": "Corners",
+  "settings.cornerSharp": "Sharp",
+  "settings.cornerRound": "Rounded",
+  "settings.clean": "Clean up saved data"
+});
+function tr(key, ...values) {
+    const fallback = UI_ENGLISH[key] ?? key;
+    let translated = fallback;
+    try {
+        translated = safeContext()?.translate?.(fallback, 'folio.' + key) || fallback;
+    } catch {
+        // English fallback when the host has no locale translator.
+    }
+    return String(translated).replace(/\{(\d+)\}/g, (token, index) => String(values[Number(index)] ?? token));
+}
+
+function uiSortLabel(mode) {
+    return tr('sort.' + mode);
+}
+
+function uiChatSortLabel(mode) {
+    return tr('chatSort.' + mode);
+}
+
+function translateSettingsText(container) {
+    if (!(container instanceof HTMLElement)) return;
+    for (const element of container.querySelectorAll('[data-folio-i18n]')) {
+        element.textContent = tr(element.getAttribute('data-folio-i18n'));
+    }
+}
+
 function createElement(tagName, className = '', text = '') {
     const element = document.createElement(tagName);
     if (className) element.className = className;
