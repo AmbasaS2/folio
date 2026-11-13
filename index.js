@@ -437,6 +437,71 @@ function savePreference(key, rawValue) {
     return true;
 }
 
+function getPinnedChatIds(avatar, contextValue = safeContext()) {
+    const value = contextValue?.extensionSettings?.[MODULE_NAME]?.pinnedChatsByAvatar?.[avatar];
+    if (!Array.isArray(value)) return [];
+    return Array.from(new Set(value.filter(id => typeof id === 'string' && id)));
+}
+
+function savePinnedChatIds(avatar, ids) {
+    if (!avatar) return;
+    const ctx = context();
+    const next = Array.from(new Set((Array.isArray(ids) ? ids : []).filter(id => typeof id === 'string' && id)));
+    const moduleSettings = ctx.extensionSettings?.[MODULE_NAME];
+    if (next.length) {
+        const settings = ensureModuleSettings(ctx);
+        if (!settings.pinnedChatsByAvatar || typeof settings.pinnedChatsByAvatar !== 'object' ||
+            Array.isArray(settings.pinnedChatsByAvatar)) settings.pinnedChatsByAvatar = {};
+        settings.pinnedChatsByAvatar[avatar] = next;
+    } else if (moduleSettings?.pinnedChatsByAvatar && typeof moduleSettings.pinnedChatsByAvatar === 'object') {
+        delete moduleSettings.pinnedChatsByAvatar[avatar];
+        if (!Object.keys(moduleSettings.pinnedChatsByAvatar).length) delete moduleSettings.pinnedChatsByAvatar;
+        cleanEmptySettings(ctx);
+    } else return;
+    ctx.saveSettingsDebounced?.();
+}
+
+function togglePinnedChat(avatar, fileId) {
+    if (!avatar || !fileId) return;
+    const pinned = getPinnedChatIds(avatar);
+    const index = pinned.indexOf(fileId);
+    if (index < 0) pinned.push(fileId);
+    else pinned.splice(index, 1);
+    savePinnedChatIds(avatar, pinned);
+    const state = activeChatState;
+    if (state?.body?.isConnected && getAvatarKey(state.character) === avatar) {
+        currentChatPage = 1;
+        renderChatRows(state.body, state.character, state.chats);
+    }
+}
+
+function migratePinnedChatId(avatar, oldFileId, newFileId) {
+    if (!avatar || !oldFileId || !newFileId || oldFileId === newFileId) return;
+    const pinned = getPinnedChatIds(avatar);
+    const index = pinned.indexOf(oldFileId);
+    if (index < 0) return;
+    if (pinned.includes(newFileId)) pinned.splice(index, 1);
+    else pinned[index] = newFileId;
+    savePinnedChatIds(avatar, pinned);
+}
+
+function removePinnedChatId(avatar, fileId) {
+    const pinned = getPinnedChatIds(avatar);
+    if (pinned.includes(fileId)) savePinnedChatIds(avatar, pinned.filter(id => id !== fileId));
+}
+
+function migratePinnedChatsForAvatar(oldAvatar, newAvatar) {
+    if (!oldAvatar || !newAvatar || oldAvatar === newAvatar) return;
+    const previous = getPinnedChatIds(oldAvatar);
+    if (!previous.length) return;
+    savePinnedChatIds(newAvatar, [...getPinnedChatIds(newAvatar), ...previous]);
+    savePinnedChatIds(oldAvatar, []);
+}
+
+function deletePinnedChatsForAvatar(avatar) {
+    if (avatar) savePinnedChatIds(avatar, []);
+}
+
 function getStoredPinnedAvatars(contextValue = safeContext()) {
     const value = contextValue?.extensionSettings?.[MODULE_NAME]?.pinnedAvatars;
     if (!Array.isArray(value)) return [];
@@ -1875,21 +1940,33 @@ function normalizeChatList(payload) {
     return chats;
 }
 
-function sortChatList(chats, sortMode = currentChatSortMode) {
+function sortChatList(chats, sortMode = currentChatSortMode, avatar = '') {
     const sorted = Array.isArray(chats) ? [...chats] : [];
     if (sortMode === 'title-asc') {
         sorted.sort((left, right) => collator.compare(left.title, right.title));
     } else {
         sorted.sort((left, right) => collator.compare(right.title, left.title));
     }
-    return sorted;
+    const pinned = getPinnedChatIds(avatar);
+    if (!pinned.length) return sorted;
+    const order = new Map(pinned.map((id, index) => [id, index]));
+    const featured = [];
+    const rest = [];
+    for (const chat of sorted) {
+        if (order.has(chat.fileId)) featured.push(chat);
+        else rest.push(chat);
+    }
+    featured.sort((left, right) => order.get(left.fileId) - order.get(right.fileId));
+    return [...featured, ...rest];
 }
 
 function renderChatRows(container, character, chats) {
     if (!(container instanceof HTMLElement)) return;
     const safeChats = Array.isArray(chats) ? chats : [];
     const settings = getFolioSettings();
-    const sortedChats = sortChatList(safeChats);
+    const avatar = getAvatarKey(character);
+    const pinnedChats = new Set(getPinnedChatIds(avatar));
+    const sortedChats = sortChatList(safeChats, currentChatSortMode, avatar);
     const totalPages = Math.max(1, Math.ceil(sortedChats.length / settings.chatPageSize));
     currentChatPage = Math.min(Math.max(1, currentChatPage), totalPages);
     const startIndex = (currentChatPage - 1) * settings.chatPageSize;
@@ -1908,11 +1985,17 @@ function renderChatRows(container, character, chats) {
         for (const chat of visibleChats) {
             const item = createElement('div', 'folio-chat-item');
             item.setAttribute('role', 'listitem');
-            const row = createElement('button', 'folio-chat-row');
+            const pinned = pinnedChats.has(chat.fileId);
+            const row = createElement('button', pinned ? 'folio-chat-row is-pinned' : 'folio-chat-row');
             row.type = 'button';
-            row.setAttribute('aria-label', `${chat.title} 열기. 길게 누르면 작업 메뉴`);
+            row.setAttribute('aria-label', `${chat.title} 열기. 길게 누르면 작업 메뉴${pinned ? '. 상단 고정됨' : ''}`);
             const title = createElement('span', 'folio-chat-title', chat.title);
             title.title = chat.title;
+            if (pinned) {
+                const icon = createElement('i', 'folio-chat-pinned-icon fa-solid fa-thumbtack');
+                icon.setAttribute('aria-hidden', 'true');
+                row.appendChild(icon);
+            }
             row.appendChild(title);
             const showChatActionMenu = point => {
                 openMenu({
@@ -1921,6 +2004,11 @@ function renderChatRows(container, character, chats) {
                     label: `${chat.title} 대화 메뉴`,
                     compact: true,
                     items: [
+                        {
+                            label: pinned ? '고정 해제' : '상단에 고정',
+                            role: 'menuitem',
+                            action: () => togglePinnedChat(avatar, chat.fileId),
+                        },
                         {
                             label: '이름 바꾸기',
                             role: 'menuitem',
@@ -2151,6 +2239,7 @@ async function requestRenameChat(character, chat, trigger) {
             newFileName: newName,
             loader: true,
         });
+        migratePinnedChatId(avatar, chat.fileId, newName);
         const refreshedChats = await fetchCharacterChats(character);
         const addedChats = Array.isArray(refreshedChats) && !refreshedChats.some(item => item.fileId === chat.fileId)
             ? refreshedChats.filter(item => !previousChatIds.has(item.fileId))
@@ -2203,6 +2292,7 @@ async function requestDeleteChat(character, chat, trigger) {
         }
 
         await deleteCharacterChatByName(String(characterId), chat.fileId);
+        removePinnedChatId(avatar, chat.fileId);
         if (!isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) return;
         const state = activeChatState;
         if (state?.body === operationBody) {
@@ -2551,6 +2641,7 @@ function handleCharacterRenamed(oldAvatar, newAvatar) {
     if (!lifecycleEnabled) return;
     migrateNote(oldAvatar, newAvatar);
     migratePinnedAvatar(oldAvatar, newAvatar);
+    migratePinnedChatsForAvatar(oldAvatar, newAvatar);
     if (sessionRecentByAvatar.has(oldAvatar)) {
         sessionRecentByAvatar.set(newAvatar, sessionRecentByAvatar.get(oldAvatar));
         sessionRecentByAvatar.delete(oldAvatar);
@@ -2569,6 +2660,7 @@ function handleCharacterDeleted(payload) {
     const avatar = getAvatarKey(payload?.character);
     deleteNoteForAvatar(avatar);
     deletePinnedAvatar(avatar);
+    deletePinnedChatsForAvatar(avatar);
     sessionRecentByAvatar.delete(avatar);
     randomOrderByAvatar.delete(avatar);
     if (!folioRuntimeActive) return;
