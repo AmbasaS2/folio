@@ -9,7 +9,7 @@ import {
 } from '../../../../script.js';
 
 /*
- * Folio v1.5.4
+ * Folio v1.5.5
  * A lightweight, character-first doorway to existing SillyTavern chats.
  *
  * Performance contract:
