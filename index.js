@@ -290,7 +290,7 @@ function createElement(tagName, className = '', text = '') {
 }
 
 function getCharacterName(character) {
-    return String(character?.name || character?.data?.name || '이름 없는 캐릭터').trim();
+    return String(character?.name || character?.data?.name || tr('character.unnamed')).trim();
 }
 
 function getAvatarKey(character) {
@@ -910,7 +910,7 @@ function positionMenu(menu, anchor, point) {
     menu.style.top = `${Math.round(top)}px`;
 }
 
-function openMenu({ anchor = null, point = null, label = '메뉴', items = [], closeOnSelect = true, compact = false } = {}) {
+function openMenu({ anchor = null, point = null, label = tr('menu.default'), items = [], closeOnSelect = true, compact = false } = {}) {
     closeMenu();
     if (!folioRuntimeActive || !items.length) return;
 
@@ -1071,14 +1071,14 @@ function renderPager(container, currentPage, totalPages, onChange, label) {
     const previous = createElement('button', 'folio-page-button', '‹');
     previous.type = 'button';
     previous.disabled = normalizedCurrent <= 1;
-    previous.setAttribute('aria-label', `${label} 이전 페이지`);
+    previous.setAttribute('aria-label', tr('page.previous', label));
     previous.addEventListener('click', () => onChange(normalizedCurrent - 1));
     const status = createElement('span', 'folio-page-status', `${normalizedCurrent} / ${normalizedTotal}`);
     status.setAttribute('aria-live', 'polite');
     const next = createElement('button', 'folio-page-button', '›');
     next.type = 'button';
     next.disabled = normalizedCurrent >= normalizedTotal;
-    next.setAttribute('aria-label', `${label} 다음 페이지`);
+    next.setAttribute('aria-label', tr('page.next', label));
     next.addEventListener('click', () => onChange(normalizedCurrent + 1));
     container.append(previous, status, next);
 }
@@ -1099,7 +1099,7 @@ function buildCard(characterRecord, contextValue, notes, availableTags) {
 
     const portraitButton = createElement('button', 'folio-card-open');
     portraitButton.type = 'button';
-    portraitButton.setAttribute('aria-label', `${name}의 대화 목록 열기`);
+    portraitButton.setAttribute('aria-label', tr('card.openChats', name));
 
     const portraitWrap = createElement('span', 'folio-portrait-wrap');
     const portrait = createElement('img', 'folio-portrait');
@@ -1131,10 +1131,10 @@ function buildCard(characterRecord, contextValue, notes, availableTags) {
         openMenu({
             anchor: portraitButton,
             point,
-            label: `${name} 고정 메뉴`,
+            label: tr('card.pinMenu', name),
             compact: true,
             items: [{
-                label: pinned ? '고정 해제' : '상단에 고정',
+                label: pinned ? tr('card.unpin') : tr('card.pin'),
                 selected: pinned,
                 action: () => togglePinnedAvatar(avatar),
             }],
@@ -1159,12 +1159,12 @@ function buildCard(characterRecord, contextValue, notes, availableTags) {
     const nameButton = createElement('button', 'folio-character-name', name);
     nameButton.type = 'button';
     nameButton.title = name;
-    nameButton.setAttribute('aria-label', `${name}의 대화 목록 열기`);
+    nameButton.setAttribute('aria-label', tr('card.openChats', name));
     nameButton.addEventListener('click', () => openCharacterDrawer(character));
 
     const tagList = characterTags.length ? createElement('ul', 'folio-card-tags') : null;
     if (tagList) {
-        tagList.setAttribute('aria-label', `${name} 태그`);
+        tagList.setAttribute('aria-label', tr('card.tags', name));
         tagList.title = characterTags.map(tag => tag.name).join(', ');
         for (const tag of characterTags) {
             const badge = createElement('li', 'folio-card-tag', tag.name);
@@ -1178,7 +1178,7 @@ function buildCard(characterRecord, contextValue, notes, availableTags) {
 
     const memoButton = createElement('button', 'folio-memo-edit');
     memoButton.type = 'button';
-    memoButton.setAttribute('aria-label', `${name} 메모 편집`);
+    memoButton.setAttribute('aria-label', tr('card.editNote', name));
     const memoText = createElement(
         'span',
         note ? 'folio-memo' : 'folio-memo folio-memo-placeholder',
@@ -1257,7 +1257,7 @@ function layoutCardTagOverflow(card) {
         const hiddenNames = hiddenBadges.map(badge => badge.textContent || '').filter(Boolean);
         overflowBadge.textContent = `+${hiddenBadges.length}`;
         overflowBadge.title = hiddenNames.join(', ');
-        overflowBadge.setAttribute('aria-label', `숨겨진 태그 ${hiddenBadges.length}개: ${hiddenNames.join(', ')}`);
+        overflowBadge.setAttribute('aria-label', tr('card.hiddenTags', hiddenBadges.length, hiddenNames.join(', ')));
 
         if (getTagFlowLineIndex(meta, overflowBadge) < 2 || visibleCount === 0) break;
         visibleCount -= 1;
@@ -1386,7 +1386,7 @@ function renderCharacterGrid(expectedRoot = rootElement) {
 
     grid.replaceChildren(fragment);
     if (visible.length === 0) {
-        const message = normalizedSearch || currentTagIds.size ? '검색 결과가 없습니다.' : '표시할 캐릭터가 없습니다.';
+        const message = tr(normalizedSearch || currentTagIds.size ? 'empty.searchCharacters' : 'empty.characters');
         grid.appendChild(createElement('p', 'folio-state is-empty', message));
     }
     renderPager(pager, currentCharacterPage, totalPages, page => {
@@ -1394,7 +1394,7 @@ function renderCharacterGrid(expectedRoot = rootElement) {
         currentCharacterPage = page;
         renderCharacterGrid(expectedRoot);
         scrollFolioToTopInsideChat(expectedRoot);
-    }, '캐릭터');
+    }, tr('page.characters'));
     scheduleCardTagLayout(expectedRoot);
 }
 
@@ -1459,7 +1459,7 @@ function mountWelcomeShortcuts(welcomePanel, chatElement) {
 
     const host = createElement('div', 'folio-shortcuts-host');
     host.id = SHORTCUTS_HOST_ID;
-    host.setAttribute('aria-label', 'SillyTavern 단축 버튼');
+    host.setAttribute('aria-label', tr('shortcuts.label'));
     shortcutsElement = shortcuts;
     shortcutsOriginalParent = originalParent;
     shortcutsOriginalNextSibling = shortcuts.nextSibling;
@@ -1488,7 +1488,7 @@ function buildRoot() {
     const sortControl = createElement('button', 'folio-sort-control');
     sortControl.type = 'button';
     sortControl.setAttribute('aria-haspopup', 'menu');
-    sortControl.setAttribute('aria-label', '폴리오 정렬 순서');
+    sortControl.setAttribute('aria-label', tr('sort.characterLabel'));
     const title = createElement('span', 'folio-title', 'Folio');
     title.id = 'folio-title';
     const sortCaret = createChevron('folio-sort-caret');
@@ -1496,7 +1496,7 @@ function buildRoot() {
     sortControl.addEventListener('click', () => {
         openMenu({
             anchor: sortControl,
-            label: '폴리오 정렬 순서',
+            label: tr('sort.characterLabel'),
             items: SORT_OPTIONS.map(option => ({
                 label: uiSortLabel(option.value),
                 selected: option.value === currentSortMode,
@@ -1514,9 +1514,9 @@ function buildRoot() {
     const searchWrap = createElement('div', 'folio-search-wrap');
     const search = createElement('input', 'folio-search');
     search.type = 'search';
-    search.placeholder = '검색';
+    search.placeholder = tr('sort.searchPlaceholder');
     search.autocomplete = 'off';
-    search.setAttribute('aria-label', '캐릭터 이름 검색');
+    search.setAttribute('aria-label', tr('sort.searchLabel'));
     search.addEventListener('input', () => {
         currentSearch = search.value;
         currentCharacterPage = 1;
@@ -1527,8 +1527,8 @@ function buildRoot() {
     const tagButton = createElement('button', 'folio-tag-filter');
     tagButton.type = 'button';
     tagButton.setAttribute('aria-haspopup', 'menu');
-    tagButton.setAttribute('aria-label', '캐릭터 태그 필터');
-    const tagLabel = createElement('span', 'folio-tag-filter-label', '태그');
+    tagButton.setAttribute('aria-label', tr('filter.tagLabel'));
+    const tagLabel = createElement('span', 'folio-tag-filter-label', tr('filter.tags'));
     tagButton.append(tagLabel, createChevron('folio-tag-filter-caret'));
     tagButton.addEventListener('click', () => {
         const tags = getAvailableTags();
@@ -1538,11 +1538,11 @@ function buildRoot() {
         }
         openMenu({
             anchor: tagButton,
-            label: '캐릭터 태그 다중 선택',
+            label: tr('filter.tagMenu'),
             closeOnSelect: false,
             items: [
                 {
-                    label: '전체',
+                    label: tr('filter.all'),
                     role: 'menuitemcheckbox',
                     selected: () => currentTagIds.size === 0,
                     action: () => {
@@ -1572,7 +1572,7 @@ function buildRoot() {
     grid.setAttribute('role', 'list');
 
     const pager = createElement('nav', 'folio-pager folio-character-pager');
-    pager.setAttribute('aria-label', '캐릭터 페이지');
+    pager.setAttribute('aria-label', tr('page.characterLabel'));
 
     root.append(header, grid, pager);
     rootElement = root;
@@ -2145,7 +2145,7 @@ function renderChatRows(container, character, chats) {
                     compact: true,
                     items: [
                         {
-                            label: pinned ? '고정 해제' : '상단에 고정',
+                            label: pinned ? tr('card.unpin') : tr('card.pin'),
                             role: 'menuitem',
                             action: () => togglePinnedChat(avatar, chat.fileId),
                         },
