@@ -1655,8 +1655,8 @@ function syncSettingsControls(container, settings = getFolioSettings()) {
 
 async function confirmFolioDataCleanup() {
     const ctx = context();
-    const title = 'Folio 저장 데이터를 정리할까요?';
-    const message = '설정, 정렬, 고정, 메모가 삭제되고 기본값으로 돌아갑니다. 캐릭터와 채팅은 삭제되지 않습니다.';
+    const title = tr('settings.cleanupTitle');
+    const message = tr('settings.cleanupMessage');
 
     if (typeof ctx.Popup === 'function' && ctx.POPUP_TYPE?.CONFIRM !== undefined) {
         const content = createElement('div', 'folio-data-cleanup-confirm');
@@ -1993,7 +1993,7 @@ function buildDrawerHeader(character, titleText, { chatSort = false, onChatSortC
         const sortControl = createElement('button', 'folio-drawer-sort-control');
         sortControl.type = 'button';
         sortControl.setAttribute('aria-haspopup', 'menu');
-        sortControl.setAttribute('aria-label', `${titleText} 채팅 목록 정렬 순서`);
+        sortControl.setAttribute('aria-label', tr('drawer.sortLabel', titleText));
         const title = createElement('span', 'folio-drawer-title', titleText);
         title.id = 'folio-drawer-title';
         const caret = createChevron('folio-drawer-sort-caret');
@@ -2001,7 +2001,7 @@ function buildDrawerHeader(character, titleText, { chatSort = false, onChatSortC
         sortControl.addEventListener('click', () => {
             openMenu({
                 anchor: sortControl,
-                label: `${titleText} 채팅 목록 정렬 순서`,
+                label: tr('drawer.sortLabel', titleText),
                 items: CHAT_SORT_OPTIONS.map(option => ({
                     label: uiChatSortLabel(option.value),
                     selected: option.value === currentChatSortMode,
@@ -2023,7 +2023,7 @@ function buildDrawerHeader(character, titleText, { chatSort = false, onChatSortC
 
     const close = createElement('button', 'folio-close', '×');
     close.type = 'button';
-    close.setAttribute('aria-label', '닫기');
+    close.setAttribute('aria-label', tr('drawer.close'));
     close.addEventListener('click', () => closeDrawer());
     header.append(characterBlock, close);
     return header;
@@ -2099,8 +2099,8 @@ function renderChatRows(container, character, chats) {
         searchWrap = createElement('div', 'folio-chat-search-wrap');
         const search = createElement('input', 'folio-chat-search text_pole');
         search.type = 'search';
-        search.placeholder = '채팅방 이름 검색';
-        search.setAttribute('aria-label', '채팅방 이름 검색');
+        search.placeholder = tr('search.chats');
+        search.setAttribute('aria-label', tr('search.chats'));
         search.autocomplete = 'off';
         search.value = currentChatSearch;
         search.addEventListener('input', () => {
@@ -2117,7 +2117,7 @@ function renderChatRows(container, character, chats) {
         const state = createElement('div', 'folio-state is-empty');
         state.setAttribute('role', 'status');
         state.appendChild(createElement('p', 'folio-state-message',
-            !safeChats.length ? '아직 저장된 대화가 없습니다.' : '일치하는 채팅방이 없습니다.'));
+            tr(!safeChats.length ? 'empty.chats' : 'empty.chatSearch')));
         content.appendChild(state);
     } else {
         const list = createElement('div', 'folio-chat-list');
@@ -2128,7 +2128,7 @@ function renderChatRows(container, character, chats) {
             const pinned = pinnedChats.has(chat.fileId);
             const row = createElement('button', pinned ? 'folio-chat-row is-pinned' : 'folio-chat-row');
             row.type = 'button';
-            row.setAttribute('aria-label', `${chat.title} 열기. 길게 누르면 작업 메뉴${pinned ? '. 상단 고정됨' : ''}`);
+            row.setAttribute('aria-label', tr('chat.open', chat.title, pinned ? tr('chat.pinnedSuffix') : ''));
             const title = createElement('span', 'folio-chat-title', chat.title);
             title.title = chat.title;
             if (pinned) {
@@ -2141,7 +2141,7 @@ function renderChatRows(container, character, chats) {
                 openMenu({
                     anchor: row,
                     point,
-                    label: `${chat.title} 대화 메뉴`,
+                    label: tr('chat.menu', chat.title),
                     compact: true,
                     items: [
                         {
@@ -2150,12 +2150,12 @@ function renderChatRows(container, character, chats) {
                             action: () => togglePinnedChat(avatar, chat.fileId),
                         },
                         {
-                            label: '이름 바꾸기',
+                            label: tr('chat.rename'),
                             role: 'menuitem',
                             action: () => void requestRenameChat(character, chat, row),
                         },
                         {
-                            label: '삭제',
+                            label: tr('chat.delete'),
                             role: 'menuitem',
                             action: () => void requestDeleteChat(character, chat, row),
                         },
@@ -2177,8 +2177,8 @@ function renderChatRows(container, character, chats) {
 
             const remove = createElement('button', 'folio-chat-delete', '×');
             remove.type = 'button';
-            remove.setAttribute('aria-label', `${chat.title} 삭제`);
-            remove.title = '대화 삭제';
+            remove.setAttribute('aria-label', tr('chat.deleteLabel', chat.title));
+            remove.title = tr('chat.deleteTitle');
             remove.addEventListener('click', event => {
                 event.stopPropagation();
                 void requestDeleteChat(character, chat, remove);
@@ -2191,13 +2191,13 @@ function renderChatRows(container, character, chats) {
 
     const footer = createElement('footer', 'folio-chat-footer');
     const pager = createElement('nav', 'folio-pager folio-chat-pager');
-    pager.setAttribute('aria-label', '채팅 페이지');
+    pager.setAttribute('aria-label', tr('chat.pageLabel'));
     renderPager(pager, currentChatPage, totalPages, page => {
         currentChatPage = page;
         renderChatRows(container, character, safeChats);
         container.scrollTop = 0;
-    }, '채팅');
-    const start = createElement('button', 'folio-button primary folio-start-chat', '새 대화 시작');
+    }, tr('page.chats'));
+    const start = createElement('button', 'folio-button primary folio-start-chat', tr('chat.newChat'));
     start.type = 'button';
     start.addEventListener('click', () => void startNewCharacterChat(character, start));
     footer.append(pager, start);
@@ -2258,8 +2258,8 @@ async function confirmChatDeletion(chatTitle) {
     if (typeof ctx.Popup === 'function' && ctx.POPUP_TYPE?.CONFIRM !== undefined) {
         const content = createElement('div', 'folio-delete-confirm');
         content.append(
-            createElement('h3', '', '대화를 삭제할까요?'),
-            createElement('p', '', `“${chatTitle}” 대화는 삭제 후 복구할 수 없습니다.`),
+            createElement('h3', '', tr('delete.title')),
+            createElement('p', '', tr('delete.message', chatTitle)),
         );
         const popup = new ctx.Popup(content, ctx.POPUP_TYPE.CONFIRM, null);
         const result = await popup.show();
@@ -2273,12 +2273,12 @@ async function confirmChatDeletion(chatTitle) {
             .replaceAll('"', '&quot;')
             .replaceAll("'", '&#39;');
         const result = await ctx.Popup.show.confirm(
-            '대화를 삭제할까요?',
-            `“${safeTitle}” 대화는 삭제 후 복구할 수 없습니다.`,
+            tr('delete.title'),
+            tr('delete.message', safeTitle),
         );
         return result === true || result === ctx.POPUP_RESULT?.AFFIRMATIVE;
     }
-    return window.confirm(`“${chatTitle}” 대화를 삭제할까요?\n삭제 후 복구할 수 없습니다.`);
+    return window.confirm(tr('delete.fallback', chatTitle));
 }
 
 function normalizeChatRenameValue(value) {
@@ -2290,13 +2290,13 @@ async function promptChatRename(chatTitle) {
     const ctx = context();
     if (ctx.Popup?.show?.input) {
         return await ctx.Popup.show.input(
-            '대화 이름 바꾸기',
-            '새 채팅방 이름을 입력해 주세요.',
+            tr('rename.title'),
+            tr('rename.prompt'),
             chatTitle,
-            { okButton: '저장', cancelButton: '취소' },
+            { okButton: tr('action.save'), cancelButton: tr('action.cancel') },
         );
     }
-    return window.prompt('새 채팅방 이름을 입력해 주세요.', chatTitle);
+    return window.prompt(tr('rename.prompt'), chatTitle);
 }
 
 async function showChatRenameNotice(message) {
@@ -2304,7 +2304,7 @@ async function showChatRenameNotice(message) {
     if (typeof ctx.Popup === 'function' && ctx.POPUP_TYPE?.TEXT !== undefined) {
         const content = createElement('div', 'folio-rename-notice');
         content.append(
-            createElement('h3', '', '이름을 바꿀 수 없습니다.'),
+            createElement('h3', '', tr('rename.unavailable')),
             createElement('p', '', message),
         );
         const popup = new ctx.Popup(content, ctx.POPUP_TYPE.TEXT, null);
@@ -2350,7 +2350,7 @@ async function requestRenameChat(character, chat, trigger) {
 
         const newName = normalizeChatRenameValue(requestedName);
         if (!newName) {
-            await showChatRenameNotice('채팅방 이름을 한 글자 이상 입력해 주세요.');
+            await showChatRenameNotice(tr('rename.empty'));
             return;
         }
         if (collator.compare(newName, chat.fileId) === 0) return;
@@ -2359,7 +2359,7 @@ async function requestRenameChat(character, chat, trigger) {
             item.fileId !== chat.fileId && collator.compare(item.fileId, newName) === 0
         ));
         if (duplicate) {
-            await showChatRenameNotice('이미 같은 이름의 대화가 있습니다.');
+            await showChatRenameNotice(tr('rename.duplicate'));
             return;
         }
 
@@ -2368,7 +2368,7 @@ async function requestRenameChat(character, chat, trigger) {
         const characterId = characters.findIndex(item => getAvatarKey(item) === avatar);
         if (characterId < 0) {
             if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-                renderDrawerState(operationBody, 'error', '캐릭터를 찾을 수 없습니다.');
+                renderDrawerState(operationBody, 'error', tr('error.characterMissing'));
             }
             return;
         }
@@ -2403,7 +2403,7 @@ async function requestRenameChat(character, chat, trigger) {
     } catch (error) {
         console.error('[Folio] Failed to rename chat:', error);
         if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-            renderDrawerState(operationBody, 'error', '대화 이름을 바꾸지 못했습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.rename'));
         }
     } finally {
         renamingChat = false;
@@ -2432,7 +2432,7 @@ async function requestDeleteChat(character, chat, trigger) {
         const characters = Array.isArray(ctx.characters) ? ctx.characters : [];
         const characterId = characters.findIndex(item => getAvatarKey(item) === avatar);
         if (characterId < 0) {
-            renderDrawerState(operationBody, 'error', '캐릭터를 찾을 수 없습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.characterMissing'));
             return;
         }
 
@@ -2448,7 +2448,7 @@ async function requestDeleteChat(character, chat, trigger) {
     } catch (error) {
         console.error('[Folio] Failed to delete chat:', error);
         if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-            renderDrawerState(operationBody, 'error', '대화를 삭제하지 못했습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.delete'));
         }
     } finally {
         deletingChat = false;
@@ -2490,7 +2490,7 @@ async function openCharacterDrawer(character) {
         },
     });
     drawerElement.replaceChildren(header, body);
-    renderDrawerState(body, 'loading', '대화 목록을 여는 중…');
+    renderDrawerState(body, 'loading', tr('loading.chats'));
     showDrawer();
     drawerElement.querySelector('.folio-close')?.focus();
 
@@ -2508,7 +2508,7 @@ async function openCharacterDrawer(character) {
     } catch (error) {
         if (controller.signal.aborted || requestSequence !== activeListSequence) return;
         console.error('[Folio] Failed to load character chat filenames:', error);
-        if (body.isConnected) renderDrawerState(body, 'error', '대화 목록을 불러오지 못했습니다.');
+        if (body.isConnected) renderDrawerState(body, 'error', tr('error.loadChats'));
     } finally {
         if (activeListController === controller) activeListController = null;
     }
@@ -2531,7 +2531,7 @@ async function startNewCharacterChat(character, button) {
     const characterId = characters.findIndex(item => getAvatarKey(item) === avatar);
     if (characterId < 0) {
         if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-            renderDrawerState(operationBody, 'error', '캐릭터를 찾을 수 없습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.characterMissing'));
         }
         return;
     }
@@ -2565,7 +2565,7 @@ async function startNewCharacterChat(character, button) {
     } catch (error) {
         console.error('[Folio] Failed to start chat:', error);
         if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-            renderDrawerState(operationBody, 'error', '새 대화를 시작하지 못했습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.startChat'));
         }
     } finally {
         openingChat = false;
@@ -2586,7 +2586,7 @@ async function openExistingChat(character, fileId, row) {
     const characterId = characters.findIndex(item => getAvatarKey(item) === avatar);
     if (characterId < 0) {
         if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-            renderDrawerState(operationBody, 'error', '캐릭터를 찾을 수 없습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.characterMissing'));
         }
         return;
     }
@@ -2630,7 +2630,7 @@ async function openExistingChat(character, fileId, row) {
     } catch (error) {
         console.error('[Folio] Failed to open chat:', error);
         if (isChatOperationBodyCurrent(operationBody, avatar, operationRevision)) {
-            renderDrawerState(operationBody, 'error', '대화를 열지 못했습니다.');
+            renderDrawerState(operationBody, 'error', tr('error.openChat'));
         }
     } finally {
         openingChat = false;
@@ -2652,21 +2652,21 @@ function openMemoEditor(character) {
     activeDrawerAvatar = avatar;
 
     drawerElement.replaceChildren();
-    drawerElement.appendChild(buildDrawerHeader(character, `${getCharacterName(character)} 메모`));
+    drawerElement.appendChild(buildDrawerHeader(character, tr('memo.title', getCharacterName(character))));
     const body = createElement('div', 'folio-drawer-body');
     const editor = createElement('form', 'folio-memo-editor');
     const input = createElement('textarea', 'folio-memo-input');
     input.maxLength = NOTE_LIMIT;
     input.rows = 3;
     input.value = getStoredNote(avatar);
-    input.placeholder = '이 캐릭터에 대한 짧은 메모';
-    input.setAttribute('aria-label', `${getCharacterName(character)} 메모, 최대 ${NOTE_LIMIT}자`);
+    input.placeholder = tr('memo.placeholder');
+    input.setAttribute('aria-label', tr('memo.label', getCharacterName(character), NOTE_LIMIT));
 
     const actions = createElement('div', 'folio-memo-actions');
-    const cancel = createElement('button', 'folio-button', '취소');
+    const cancel = createElement('button', 'folio-button', tr('action.cancel'));
     cancel.type = 'button';
     cancel.addEventListener('click', () => closeDrawer());
-    const save = createElement('button', 'folio-button primary', '저장');
+    const save = createElement('button', 'folio-button primary', tr('action.save'));
     save.type = 'submit';
     actions.append(cancel, save);
     editor.append(input, actions);
