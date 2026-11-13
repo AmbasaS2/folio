@@ -135,6 +135,7 @@ let currentSearch = '';
 const currentTagIds = new Set();
 let currentCharacterPage = 1;
 let currentChatPage = 1;
+let currentChatSearch = '';
 let currentSortMode = DEFAULT_SORT_MODE;
 let currentChatSortMode = DEFAULT_CHAT_SORT_MODE;
 let activeChatState = null;
@@ -1967,17 +1968,38 @@ function renderChatRows(container, character, chats) {
     const avatar = getAvatarKey(character);
     const pinnedChats = new Set(getPinnedChatIds(avatar));
     const sortedChats = sortChatList(safeChats, currentChatSortMode, avatar);
-    const totalPages = Math.max(1, Math.ceil(sortedChats.length / settings.chatPageSize));
+    const query = currentChatSearch.trim().toLocaleLowerCase();
+    const matchingChats = query ? sortedChats.filter(chat => chat.title.toLocaleLowerCase().includes(query)) : sortedChats;
+    const totalPages = Math.max(1, Math.ceil(matchingChats.length / settings.chatPageSize));
     currentChatPage = Math.min(Math.max(1, currentChatPage), totalPages);
     const startIndex = (currentChatPage - 1) * settings.chatPageSize;
-    const visibleChats = sortedChats.slice(startIndex, startIndex + settings.chatPageSize);
+    const visibleChats = matchingChats.slice(startIndex, startIndex + settings.chatPageSize);
     activeChatState = { character, chats: safeChats, body: container };
 
+    let searchWrap = container.querySelector('.folio-chat-search-wrap');
+    if (!searchWrap) {
+        searchWrap = createElement('div', 'folio-chat-search-wrap');
+        const search = createElement('input', 'folio-chat-search text_pole');
+        search.type = 'search';
+        search.placeholder = '채팅방 이름 검색';
+        search.setAttribute('aria-label', '채팅방 이름 검색');
+        search.autocomplete = 'off';
+        search.value = currentChatSearch;
+        search.addEventListener('input', () => {
+            currentChatSearch = search.value;
+            currentChatPage = 1;
+            const state = activeChatState;
+            if (state?.body === container) renderChatRows(container, state.character, state.chats);
+        });
+        searchWrap.appendChild(search);
+    }
+
     const content = createElement('div', 'folio-chat-content');
-    if (!safeChats.length) {
+    if (!matchingChats.length) {
         const state = createElement('div', 'folio-state is-empty');
         state.setAttribute('role', 'status');
-        state.appendChild(createElement('p', 'folio-state-message', '아직 저장된 대화가 없습니다.'));
+        state.appendChild(createElement('p', 'folio-state-message',
+            !safeChats.length ? '아직 저장된 대화가 없습니다.' : '일치하는 채팅방이 없습니다.'));
         content.appendChild(state);
     } else {
         const list = createElement('div', 'folio-chat-list');
@@ -2061,7 +2083,12 @@ function renderChatRows(container, character, chats) {
     start.type = 'button';
     start.addEventListener('click', () => void startNewCharacterChat(character, start));
     footer.append(pager, start);
-    container.replaceChildren(content, footer);
+    let results = container.querySelector('.folio-chat-results');
+    if (!results) {
+        results = createElement('div', 'folio-chat-results');
+        container.replaceChildren(searchWrap, results);
+    }
+    results.replaceChildren(content, footer);
 }
 
 async function fetchCharacterChats(character, signal) {
@@ -2329,6 +2356,7 @@ async function openCharacterDrawer(character) {
 
     currentChatSortMode = getStoredChatSortMode();
     currentChatPage = 1;
+    currentChatSearch = '';
     activeChatState = null;
     const body = createElement('div', 'folio-drawer-body');
     const header = buildDrawerHeader(character, getCharacterName(character), {
@@ -2588,6 +2616,7 @@ function stopFolioRuntime() {
     lastFocusedElement = null;
     currentCharacterPage = 1;
     currentChatPage = 1;
+    currentChatSearch = '';
     currentSearch = '';
     currentTagIds.clear();
     currentSortMode = DEFAULT_SORT_MODE;
@@ -2747,6 +2776,7 @@ function cleanup() {
     settingsMountPromise = null;
     activeDrawerAvatar = '';
     activeChatState = null;
+    currentChatSearch = '';
     lastFocusedElement = null;
     cleaningFolioData = false;
     sessionRecentByAvatar.clear();
