@@ -77,9 +77,9 @@
   "folio.settings.ratio": "Proporción del retrato",
   "folio.settings.ratioPortrait": "Vertical (2:3)",
   "folio.settings.ratioSquare": "Cuadrado (1:1)",
-  "folio.settings.columns": "Retratos por fila",
-  "folio.settings.desktop": "Ordenador",
-  "folio.settings.mobile": "Dispositivos móviles",
+  "folio.settings.columns": "Distribución de retratos",
+  "folio.settings.desktop": "Horizontal (🖥️)",
+  "folio.settings.mobile": "Horizontal (📱)",
   "folio.unit.count": "{0} elementos",
   "folio.settings.characterPage": "Retratos por página",
   "folio.settings.chatPage": "Chats por página",
@@ -87,5 +87,8 @@
   "folio.settings.corner": "Esquinas",
   "folio.settings.cornerSharp": "Rectas",
   "folio.settings.cornerRound": "Redondeadas",
-  "folio.settings.clean": "Limpiar datos guardados"
+  "folio.settings.clean": "Limpiar datos guardados",
+  "folio.settings.exposureCount": "Cantidad visible",
+  "folio.settings.rows": "Filas verticales",
+  "folio.unit.rows": "{0} filas"
 }
