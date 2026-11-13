@@ -439,11 +439,11 @@ function updateTagFilterControl(contextValue = safeContext(), expectedRoot = roo
         .filter(tag => currentTagIds.has(tag.id))
         .map(tag => tag.name);
     const selectedCount = selectedNames.length;
-    label.textContent = selectedNames.length ? selectedNames.join(', ') : '태그';
-    button.title = selectedNames.length ? selectedNames.join(', ') : '전체';
+    label.textContent = selectedNames.length ? selectedNames.join(', ') : tr('filter.tags');
+    button.title = selectedNames.length ? selectedNames.join(', ') : tr('filter.all');
     button.setAttribute(
         'aria-label',
-        selectedCount ? `캐릭터 태그 필터, ${selectedCount}개 선택됨` : '캐릭터 태그 필터, 전체',
+        selectedCount ? tr('filter.selected', selectedCount) : tr('filter.allSelected'),
     );
 }
 
@@ -1492,17 +1492,17 @@ function buildRoot() {
     const title = createElement('span', 'folio-title', 'Folio');
     title.id = 'folio-title';
     const sortCaret = createChevron('folio-sort-caret');
-    sortControl.title = SORT_OPTIONS.find(option => option.value === currentSortMode)?.label || '';
+    sortControl.title = uiSortLabel(currentSortMode);
     sortControl.addEventListener('click', () => {
         openMenu({
             anchor: sortControl,
             label: '폴리오 정렬 순서',
             items: SORT_OPTIONS.map(option => ({
-                label: option.label,
+                label: uiSortLabel(option.value),
                 selected: option.value === currentSortMode,
                 action: () => {
                     saveSortMode(option.value);
-                    sortControl.title = option.label;
+                    sortControl.title = uiSortLabel(option.value);
                 },
             })),
         });
@@ -1628,6 +1628,7 @@ function handlePreferenceChange(key) {
 
 function syncSettingsControls(container, settings = getFolioSettings()) {
     if (!(container instanceof HTMLElement)) return;
+    translateSettingsText(container);
 
     const enabledControl = container.querySelector('#folio-enabled');
     if (enabledControl instanceof HTMLInputElement && enabledControl.type === 'checkbox') {
@@ -1646,7 +1647,7 @@ function syncSettingsControls(container, settings = getFolioSettings()) {
 
         const value = settings[key];
         control.value = String(indexed ? values.indexOf(value) : value);
-        const label = `${value}${unit}`;
+        const label = unit === '개' ? tr('unit.count', value) : `${value}${unit}`;
         output.value = label;
         control.setAttribute('aria-valuetext', label);
     }
@@ -1722,7 +1723,7 @@ async function requestFolioDataCleanup(button, container = settingsElement) {
         if (rootElement?.isConnected) {
             const sortControl = rootElement.querySelector('.folio-sort-control');
             if (sortControl instanceof HTMLButtonElement) {
-                sortControl.title = SORT_OPTIONS.find(option => option.value === currentSortMode)?.label || '';
+                sortControl.title = uiSortLabel(currentSortMode);
             }
             renderCharacterGrid();
         }
@@ -1770,7 +1771,7 @@ function bindSettingsControls(container) {
         };
         const syncValue = () => {
             const value = readValue();
-            const label = `${value}${unit}`;
+            const label = unit === '개' ? tr('unit.count', value) : `${value}${unit}`;
             output.value = label;
             control.setAttribute('aria-valuetext', label);
             return value;
@@ -1996,17 +1997,17 @@ function buildDrawerHeader(character, titleText, { chatSort = false, onChatSortC
         const title = createElement('span', 'folio-drawer-title', titleText);
         title.id = 'folio-drawer-title';
         const caret = createChevron('folio-drawer-sort-caret');
-        sortControl.title = CHAT_SORT_OPTIONS.find(option => option.value === currentChatSortMode)?.label || '';
+        sortControl.title = uiChatSortLabel(currentChatSortMode);
         sortControl.addEventListener('click', () => {
             openMenu({
                 anchor: sortControl,
                 label: `${titleText} 채팅 목록 정렬 순서`,
                 items: CHAT_SORT_OPTIONS.map(option => ({
-                    label: option.label,
+                    label: uiChatSortLabel(option.value),
                     selected: option.value === currentChatSortMode,
                     action: () => {
                         saveChatSortMode(option.value);
-                        sortControl.title = option.label;
+                        sortControl.title = uiChatSortLabel(option.value);
                         onChatSortChange?.(currentChatSortMode);
                     },
                 })),
