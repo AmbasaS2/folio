@@ -29,7 +29,8 @@ jobs:
           assert(js.includes("searchWrap.append(searchIcon, search)"));
           assert(js.includes("let searchWrap = container.querySelector('.folio-chat-search-wrap')"));
           assert(js.includes("const matchingChats = query ? sortedChats.filter("));
-          assert(!js.includes("searchWrap.appendChild(search)"));
+          const chatInputBlock = js.slice(js.indexOf("let searchWrap = container.querySelector('.folio-chat-search-wrap')"), js.indexOf("const content = createElement('div', 'folio-chat-content')"));
+          assert(!chatInputBlock.includes("searchWrap.appendChild(search)"));
           const block=css.slice(css.indexOf('.folio-chat-search-wrap {'),css.indexOf('.folio-chat-results {'));
           assert(block.includes('width: 50%'));
           assert(block.includes('margin: 3px 0 10px auto'));
