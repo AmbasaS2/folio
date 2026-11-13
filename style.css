@@ -1119,7 +1119,7 @@
 
 .folio-settings .folio-enabled-setting input[type="checkbox"] {
     margin: 0;
-    transform: translateY(-0.14em);
+    transform: none;
 }
 
 .folio-setting-row {
