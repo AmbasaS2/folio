@@ -36,7 +36,7 @@
   "folio.settings.cleanupMessage": "설정, 정렬, 고정, 메모가 삭제되고 기본값으로 돌아갑니다. 캐릭터와 채팅은 삭제되지 않습니다.",
   "folio.drawer.sortLabel": "{0} 채팅 목록 정렬 순서",
   "folio.drawer.close": "닫기",
-  "folio.search.chats": "채팅방 이름 검색",
+  "folio.search.chats": "채팅방 검색",
   "folio.empty.chats": "아직 저장된 대화가 없습니다.",
   "folio.empty.chatSearch": "일치하는 채팅방이 없습니다.",
   "folio.chat.open": "{0} 열기. 길게 누르면 작업 메뉴{1}",
