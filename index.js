@@ -46,6 +46,8 @@ const LONG_PRESS_DISTANCE = 10;
 const PORTRAIT_SCALES = Object.freeze([50, 60, 70, 80, 90, 100, 110, 120]);
 const DESKTOP_COLUMN_COUNTS = Object.freeze([2, 3, 4, 5, 6, 7]);
 const MOBILE_COLUMN_COUNTS = Object.freeze([1, 2, 3, 4, 5]);
+const PORTRAIT_ROW_COUNTS = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]);
+const MOBILE_PORTRAIT_MEDIA_QUERY = '(max-width: 38rem)';
 const CHARACTER_PAGE_SIZES = Object.freeze([3, 4, 6, 8, 9, 12, 15, 16]);
 const FONT_SCALES = Object.freeze([80, 90, 100, 110, 120, 130, 140, 150]);
 const CHAT_PAGE_SIZES = Object.freeze([5, 10, 15, 20]);
@@ -56,7 +58,8 @@ const DEFAULT_SETTINGS = Object.freeze({
     portraitRatio: 'portrait',
     desktopColumns: 3,
     mobileColumns: 3,
-    characterPageSize: 12,
+    portraitRows: 4,
+    characterPageSize: 12, // Legacy page-size preference kept for rollback; the grid now uses columns × rows.
     fontScale: 100,
     cornerStyle: 'round',
     chatPageSize: 10,
@@ -68,6 +71,7 @@ const SETTING_OPTIONS = Object.freeze({
     portraitRatio: new Set(['portrait', 'square']),
     desktopColumns: new Set(DESKTOP_COLUMN_COUNTS),
     mobileColumns: new Set(MOBILE_COLUMN_COUNTS),
+    portraitRows: new Set(PORTRAIT_ROW_COUNTS),
     characterPageSize: new Set(CHARACTER_PAGE_SIZES),
     fontScale: new Set(FONT_SCALES),
     cornerStyle: new Set(['sharp', 'round']),
@@ -78,10 +82,10 @@ const SELECT_SETTING_CONTROLS = Object.freeze([
     { id: 'folio-portrait-ratio', key: 'portraitRatio' },
     { id: 'folio-desktop-columns', key: 'desktopColumns' },
     { id: 'folio-mobile-columns', key: 'mobileColumns' },
+    { id: 'folio-portrait-rows', key: 'portraitRows' },
     { id: 'folio-corner-style', key: 'cornerStyle' },
 ]);
 const RANGE_SETTING_CONTROLS = Object.freeze([
-    { id: 'folio-character-page-size', key: 'characterPageSize', values: CHARACTER_PAGE_SIZES, unit: 'count', indexed: true },
     { id: 'folio-chat-page-size', key: 'chatPageSize', values: CHAT_PAGE_SIZES, unit: 'count' },
     { id: 'folio-font-scale', key: 'fontScale', values: FONT_SCALES, unit: '%', live: true },
 ]);
@@ -146,6 +150,7 @@ let renamingChat = false;
 let cleaningFolioData = false;
 let lifecycleRevision = 0;
 let pendingCharacterRefresh = false;
+let portraitPageMediaQuery = null;
 let enabledSaveQueue = null;
 const sessionRecentByAvatar = new Map();
 const randomOrderByAvatar = new Map();
@@ -489,7 +494,7 @@ function ensureModuleSettings(contextValue) {
 function normalizeSettingValue(key, rawValue) {
     const options = SETTING_OPTIONS[key];
     if (!options) return DEFAULT_SETTINGS[key];
-    if (key === 'portraitScale' || key === 'desktopColumns' || key === 'mobileColumns' || key === 'characterPageSize' || key === 'fontScale' || key === 'chatPageSize') {
+    if (key === 'portraitScale' || key === 'desktopColumns' || key === 'mobileColumns' || key === 'portraitRows' || key === 'characterPageSize' || key === 'fontScale' || key === 'chatPageSize') {
         const numeric = Number(rawValue);
         return options.has(numeric) ? numeric : DEFAULT_SETTINGS[key];
     }
@@ -505,6 +510,7 @@ function getFolioSettings(contextValue = safeContext()) {
         portraitRatio: normalizeSettingValue('portraitRatio', stored?.portraitRatio),
         desktopColumns: normalizeSettingValue('desktopColumns', stored?.desktopColumns),
         mobileColumns: normalizeSettingValue('mobileColumns', stored?.mobileColumns),
+        portraitRows: normalizeSettingValue('portraitRows', stored?.portraitRows),
         characterPageSize: normalizeSettingValue('characterPageSize', stored?.characterPageSize),
         fontScale: normalizeSettingValue('fontScale', stored?.fontScale),
         cornerStyle: normalizeSettingValue('cornerStyle', stored?.cornerStyle),
@@ -1353,6 +1359,35 @@ function observeTagLayout(expectedRoot = rootElement) {
     scheduleCardTagLayout(expectedRoot);
 }
 
+function getPortraitsPerPage(settings = getFolioSettings()) {
+    // Match the exact 38rem CSS breakpoint, not a guessed device type.
+    const mobile = globalThis.matchMedia?.(MOBILE_PORTRAIT_MEDIA_QUERY)?.matches === true;
+    const columns = mobile ? settings.mobileColumns : settings.desktopColumns;
+    return columns * settings.portraitRows;
+}
+
+function handlePortraitPageBreakpointChange() {
+    if (!folioRuntimeActive || !rootElement?.isConnected) return;
+    currentCharacterPage = 1;
+    renderCharacterGrid();
+}
+
+function bindPortraitPageBreakpoint() {
+    if (portraitPageMediaQuery || typeof globalThis.matchMedia !== 'function') return;
+    const query = globalThis.matchMedia(MOBILE_PORTRAIT_MEDIA_QUERY);
+    if (typeof query.addEventListener === 'function') query.addEventListener('change', handlePortraitPageBreakpointChange);
+    else if (typeof query.addListener === 'function') query.addListener(handlePortraitPageBreakpointChange);
+    portraitPageMediaQuery = query;
+}
+
+function unbindPortraitPageBreakpoint() {
+    const query = portraitPageMediaQuery;
+    if (!query) return;
+    if (typeof query.removeEventListener === 'function') query.removeEventListener('change', handlePortraitPageBreakpointChange);
+    else if (typeof query.removeListener === 'function') query.removeListener(handlePortraitPageBreakpointChange);
+    portraitPageMediaQuery = null;
+}
+
 function renderCharacterGrid(expectedRoot = rootElement) {
     // This deliberately also renders a detached root. mountFolio builds the
     // complete first frame before inserting it, so Folio never flashes in late.
@@ -1376,10 +1411,11 @@ function renderCharacterGrid(expectedRoot = rootElement) {
         const matchesSearch = !normalizedSearch || getCharacterName(character).toLocaleLowerCase().includes(normalizedSearch);
         return matchesSearch && characterMatchesSelectedTags(character, currentTagIds, contextValue);
     });
-    const totalPages = Math.max(1, Math.ceil(filtered.length / settings.characterPageSize));
+    const portraitsPerPage = getPortraitsPerPage(settings);
+    const totalPages = Math.max(1, Math.ceil(filtered.length / portraitsPerPage));
     currentCharacterPage = Math.min(Math.max(1, currentCharacterPage), totalPages);
-    const startIndex = (currentCharacterPage - 1) * settings.characterPageSize;
-    const visible = filtered.slice(startIndex, startIndex + settings.characterPageSize);
+    const startIndex = (currentCharacterPage - 1) * portraitsPerPage;
+    const visible = filtered.slice(startIndex, startIndex + portraitsPerPage);
 
     disconnectPortraitObserver();
     const fragment = document.createDocumentFragment();
@@ -1618,7 +1654,7 @@ function handlePreferenceChange(key) {
     applyVisualSettings();
     if (key === 'imageQuality') {
         renderCharacterGrid();
-    } else if (key === 'characterPageSize') {
+    } else if (key === 'desktopColumns' || key === 'mobileColumns' || key === 'portraitRows') {
         currentCharacterPage = 1;
         renderCharacterGrid();
     } else if (key === 'chatPageSize') {
@@ -2724,6 +2760,7 @@ function stopFolioRuntime() {
     disconnectTagLayoutObserver();
     closeMenu();
     unbindRuntimeEvents();
+    unbindPortraitPageBreakpoint();
     restoreWelcomeShortcuts();
 
     document.getElementById(ROOT_ID)?.remove();
@@ -2754,6 +2791,7 @@ function startFolioRuntime() {
         runtimeRevision += 1;
     }
     bindRuntimeEvents();
+    bindPortraitPageBreakpoint();
     ensureChatObserver();
     mountCurrentWelcome();
 }
