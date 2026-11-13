@@ -16,5 +16,12 @@
     "activate": "onActivate",
     "enable": "onEnable",
     "disable": "onDisable"
+  },
+  "i18n": {
+    "ko-kr": "i18n/ko-kr.json",
+    "ja-jp": "i18n/ja-jp.json",
+    "zh-cn": "i18n/zh-cn.json",
+    "zh-tw": "i18n/zh-tw.json",
+    "es-es": "i18n/es-es.json"
   }
 }
