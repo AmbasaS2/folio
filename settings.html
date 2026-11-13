@@ -11,27 +11,29 @@
                     <span data-folio-i18n="settings.enabled">Folio 활성화</span>
                 </label>
 
-                <label class="folio-setting-row" for="folio-image-quality">
-                    <span class="folio-setting-label" data-folio-i18n="settings.quality">초상화 화질</span>
-                    <select id="folio-image-quality" class="text_pole">
-                        <option value="low" data-folio-i18n="settings.qualityLow">저화질 썸네일</option>
-                        <option value="high" data-folio-i18n="settings.qualityHigh">고화질 원본</option>
-                    </select>
-                </label>
-
-                <label class="folio-setting-row" for="folio-portrait-ratio">
-                    <span class="folio-setting-label" data-folio-i18n="settings.ratio">초상화 비율</span>
-                    <select id="folio-portrait-ratio" class="text_pole">
-                        <option value="portrait" data-folio-i18n="settings.ratioPortrait">세로형 (2:3)</option>
-                        <option value="square" data-folio-i18n="settings.ratioSquare">정사각형 (1:1)</option>
-                    </select>
-                </label>
+                <div class="folio-quality-options">
+                    <label class="folio-setting-row" for="folio-image-quality">
+                        <span class="folio-setting-label" data-folio-i18n="settings.quality">초상화 화질</span>
+                        <select id="folio-image-quality" class="text_pole">
+                            <option value="low" data-folio-i18n="settings.qualityLow">저화질 썸네일</option>
+                            <option value="high" data-folio-i18n="settings.qualityHigh">고화질 원본</option>
+                        </select>
+                    </label>
+                    <label class="folio-setting-row" for="folio-portrait-ratio">
+                        <span class="folio-setting-label" data-folio-i18n="settings.ratio">초상화 비율</span>
+                        <select id="folio-portrait-ratio" class="text_pole">
+                            <option value="portrait" data-folio-i18n="settings.ratioPortrait">세로형 (2:3)</option>
+                            <option value="square" data-folio-i18n="settings.ratioSquare">정사각형 (1:1)</option>
+                        </select>
+                    </label>
+                </div>
 
                 <div class="folio-setting-row folio-column-setting" role="group" aria-labelledby="folio-columns-label">
-                    <span class="folio-setting-label" id="folio-columns-label" data-folio-i18n="settings.columns">한 줄에 표시할 개수</span>
+                    <span class="folio-setting-label" id="folio-columns-label" data-folio-i18n="settings.columns">초상화 노출 설정</span>
+                    <span class="folio-setting-subtitle" data-folio-i18n="settings.exposureCount">노출 개수</span>
                     <div class="folio-column-options">
                         <label class="folio-column-option" for="folio-desktop-columns">
-                            <span data-folio-i18n="settings.desktop">데스크톱</span>
+                            <span data-folio-i18n="settings.desktop">가로 (🖥️)</span>
                             <select id="folio-desktop-columns" class="text_pole">
                                 <option value="2" data-folio-count="2">2개</option>
                                 <option value="3" selected data-folio-count="3">3개</option>
@@ -42,7 +44,7 @@
                             </select>
                         </label>
                         <label class="folio-column-option" for="folio-mobile-columns">
-                            <span data-folio-i18n="settings.mobile">모바일 기기</span>
+                            <span data-folio-i18n="settings.mobile">가로 (📱)</span>
                             <select id="folio-mobile-columns" class="text_pole">
                                 <option value="1" data-folio-count="1">1개</option>
                                 <option value="2" data-folio-count="2">2개</option>
@@ -51,16 +53,29 @@
                                 <option value="5" data-folio-count="5">5개</option>
                             </select>
                         </label>
+                        <label class="folio-column-option" for="folio-portrait-rows">
+                            <span data-folio-i18n="settings.rows">세로 줄 수</span>
+                            <select id="folio-portrait-rows" class="text_pole">
+                                <option value="1" data-folio-rows="1">1줄</option>
+                                <option value="2" data-folio-rows="2">2줄</option>
+                                <option value="3" data-folio-rows="3">3줄</option>
+                                <option value="4" selected data-folio-rows="4">4줄</option>
+                                <option value="5" data-folio-rows="5">5줄</option>
+                                <option value="6" data-folio-rows="6">6줄</option>
+                                <option value="7" data-folio-rows="7">7줄</option>
+                                <option value="8" data-folio-rows="8">8줄</option>
+                            </select>
+                        </label>
                     </div>
                 </div>
 
-                <div class="folio-setting-row folio-range-setting">
-                    <div class="folio-range-title">
-                        <label class="folio-setting-label" for="folio-character-page-size" data-folio-i18n="settings.characterPage">페이지당 초상화 개수</label>
-                        <output id="folio-character-page-size-value" class="folio-setting-value" for="folio-character-page-size">12개</output>
-                    </div>
-                    <input id="folio-character-page-size" class="neo-range-slider folio-setting-slider" type="range" min="0" max="7" step="1" value="5">
-                </div>
+                <label class="folio-setting-row" for="folio-corner-style">
+                    <span class="folio-setting-label" data-folio-i18n="settings.corner">모서리</span>
+                    <select id="folio-corner-style" class="text_pole">
+                        <option value="sharp" data-folio-i18n="settings.cornerSharp">각지게</option>
+                        <option value="round" data-folio-i18n="settings.cornerRound">라운드</option>
+                    </select>
+                </label>
 
                 <div class="folio-setting-row folio-range-setting">
                     <div class="folio-range-title">
@@ -77,14 +92,6 @@
                     </div>
                     <input id="folio-font-scale" class="neo-range-slider folio-setting-slider" type="range" min="80" max="150" step="10" value="100">
                 </div>
-
-                <label class="folio-setting-row" for="folio-corner-style">
-                    <span class="folio-setting-label" data-folio-i18n="settings.corner">모서리</span>
-                    <select id="folio-corner-style" class="text_pole">
-                        <option value="sharp" data-folio-i18n="settings.cornerSharp">각지게</option>
-                        <option value="round" data-folio-i18n="settings.cornerRound">라운드</option>
-                    </select>
-                </label>
             </div>
 
             <div class="folio-settings-actions">
