@@ -249,9 +249,9 @@ const UI_ENGLISH = Object.freeze({
   "settings.ratio": "Portrait ratio",
   "settings.ratioPortrait": "Portrait (2:3)",
   "settings.ratioSquare": "Square (1:1)",
-  "settings.columns": "Portraits per row",
-  "settings.desktop": "Desktop",
-  "settings.mobile": "Mobile devices",
+  "settings.columns": "Portrait display settings",
+  "settings.desktop": "Across (🖥️)",
+  "settings.mobile": "Across (📱)",
   "unit.count": "{0} items",
   "settings.characterPage": "Portraits per page",
   "settings.chatPage": "Chats per page",
@@ -259,7 +259,10 @@ const UI_ENGLISH = Object.freeze({
   "settings.corner": "Corners",
   "settings.cornerSharp": "Sharp",
   "settings.cornerRound": "Rounded",
-  "settings.clean": "Clean up saved data"
+  "settings.clean": "Clean up saved data",
+  "settings.exposureCount": "Display count",
+  "settings.rows": "Vertical rows",
+  "unit.rows": "{0} rows"
 });
 function tr(key, ...values) {
     const fallback = UI_ENGLISH[key] ?? key;
@@ -287,6 +290,9 @@ function translateSettingsText(container) {
     }
     for (const option of container.querySelectorAll('[data-folio-count]')) {
         option.textContent = tr('unit.count', Number(option.getAttribute('data-folio-count')));
+    }
+    for (const option of container.querySelectorAll('[data-folio-rows]')) {
+        option.textContent = tr('unit.rows', Number(option.getAttribute('data-folio-rows')));
     }
 }
 
