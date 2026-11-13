@@ -77,9 +77,9 @@
   "folio.settings.ratio": "초상화 비율",
   "folio.settings.ratioPortrait": "세로형 (2:3)",
   "folio.settings.ratioSquare": "정사각형 (1:1)",
-  "folio.settings.columns": "한 줄에 표시할 개수",
-  "folio.settings.desktop": "데스크톱",
-  "folio.settings.mobile": "모바일 기기",
+  "folio.settings.columns": "초상화 노출 설정",
+  "folio.settings.desktop": "가로 (🖥️)",
+  "folio.settings.mobile": "가로 (📱)",
   "folio.unit.count": "{0}개",
   "folio.settings.characterPage": "페이지당 초상화 개수",
   "folio.settings.chatPage": "페이지당 채팅 개수",
@@ -87,5 +87,8 @@
   "folio.settings.corner": "모서리",
   "folio.settings.cornerSharp": "각지게",
   "folio.settings.cornerRound": "라운드",
-  "folio.settings.clean": "세팅 데이터 정리"
+  "folio.settings.clean": "세팅 데이터 정리",
+  "folio.settings.exposureCount": "노출 개수",
+  "folio.settings.rows": "세로 줄 수",
+  "folio.unit.rows": "{0}줄"
 }
