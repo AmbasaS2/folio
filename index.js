@@ -2060,17 +2060,40 @@ function buildDrawerHeader(character, titleText, { chatSort = false, onChatSortC
         });
         sortControl.append(title, caret);
         characterBlock.appendChild(sortControl);
+        header.classList.add('folio-drawer-header-with-search');
+
+        // Keep the search in the stable header so filtering never replaces the focused input.
+        const searchWrap = createElement('div', 'folio-chat-search-wrap');
+        const searchIcon = createElement('i', 'folio-chat-search-icon fa-solid fa-magnifying-glass');
+        searchIcon.setAttribute('aria-hidden', 'true');
+        const search = createElement('input', 'folio-chat-search text_pole');
+        search.type = 'search';
+        search.placeholder = tr('search.chats');
+        search.setAttribute('aria-label', tr('search.chats'));
+        search.autocomplete = 'off';
+        search.value = currentChatSearch;
+        search.addEventListener('input', () => {
+            currentChatSearch = search.value;
+            currentChatPage = 1;
+            const state = activeChatState;
+            if (state?.body?.isConnected && getAvatarKey(state.character) === getAvatarKey(character)) {
+                renderChatRows(state.body, state.character, state.chats);
+            }
+        });
+        searchWrap.append(searchIcon, search);
+        header.append(characterBlock, searchWrap);
     } else {
         const title = createElement('h3', 'folio-drawer-title', titleText);
         title.id = 'folio-drawer-title';
         characterBlock.appendChild(title);
+        header.appendChild(characterBlock);
     }
 
     const close = createElement('button', 'folio-close', '×');
     close.type = 'button';
     close.setAttribute('aria-label', tr('drawer.close'));
     close.addEventListener('click', () => closeDrawer());
-    header.append(characterBlock, close);
+    header.appendChild(close);
     return header;
 }
 
@@ -2138,26 +2161,6 @@ function renderChatRows(container, character, chats) {
     const startIndex = (currentChatPage - 1) * settings.chatPageSize;
     const visibleChats = matchingChats.slice(startIndex, startIndex + settings.chatPageSize);
     activeChatState = { character, chats: safeChats, body: container };
-
-    let searchWrap = container.querySelector('.folio-chat-search-wrap');
-    if (!searchWrap) {
-        searchWrap = createElement('div', 'folio-chat-search-wrap');
-        const searchIcon = createElement('i', 'folio-chat-search-icon fa-solid fa-magnifying-glass');
-        searchIcon.setAttribute('aria-hidden', 'true');
-        const search = createElement('input', 'folio-chat-search text_pole');
-        search.type = 'search';
-        search.placeholder = tr('search.chats');
-        search.setAttribute('aria-label', tr('search.chats'));
-        search.autocomplete = 'off';
-        search.value = currentChatSearch;
-        search.addEventListener('input', () => {
-            currentChatSearch = search.value;
-            currentChatPage = 1;
-            const state = activeChatState;
-            if (state?.body === container) renderChatRows(container, state.character, state.chats);
-        });
-        searchWrap.append(searchIcon, search);
-    }
 
     const content = createElement('div', 'folio-chat-content');
     if (!matchingChats.length) {
@@ -2251,7 +2254,7 @@ function renderChatRows(container, character, chats) {
     let results = container.querySelector('.folio-chat-results');
     if (!results) {
         results = createElement('div', 'folio-chat-results');
-        container.replaceChildren(searchWrap, results);
+        container.replaceChildren(results);
     }
     results.replaceChildren(content, footer);
 }
