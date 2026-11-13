@@ -18,7 +18,7 @@ Each character card shows the portrait, name, assigned SillyTavern tags, and an 
 |---|---|
 | **Search** | Finds characters by name. Partial matches are supported. |
 | **Tag** | Selects one or more SillyTavern tags. When several tags are selected, only characters that have all of them are shown. |
-| **Folio title / sort menu** | Sorts characters by recent chat, name ascending, name descending, or highest chat volume. |
+| **Folio title / sort menu** | Sorts by recent chat, name, chat volume, or **Random order**. Choosing Random again reshuffles. Page changes and filtering preserve the randomized order; pinned characters stay on top. |
 | **Click a portrait or name** | Opens that character's chat drawer. |
 | **Long-press or right-click a portrait** | Pins the character to the top of the shelf or removes the pin. Pinned characters stay above the selected sort order. |
 | **Click the note area** | Adds or edits a short note of up to 100 characters. Cards normally show up to three lines, or four when there is no tag row. |
@@ -34,9 +34,10 @@ Clicking a character opens a drawer containing that character's saved chat filen
 
 | Control or action | What it does |
 |---|---|
-| **Character name / sort menu** | Sorts chat titles in ascending or descending order. |
+| **Character name / sort menu** | Sorts chat titles ascending or descending, with pinned chats always at the top. |
+| **Search chat titles** | Filters already-loaded chat titles for the selected character without scanning messages or making requests on each keystroke. |
 | **Click a chat title** | Opens the selected chat through SillyTavern. |
-| **Long-press or right-click a chat title** | Opens the rename and delete menu. |
+| **Long-press or right-click a chat title** | Opens pin/unpin, rename, and delete actions. Pinned chats are stored per character; pins follow renames and are removed when chats are deleted. |
 | Desktop hover `×` beside a chat | Deletes that chat after confirmation. Touch devices use the long-press menu instead. |
 | **New Chat** | Selects the character and starts a new chat. |
 | **Page controls** | Moves between chat pages when the list exceeds the selected page size. |
@@ -61,6 +62,10 @@ Configure Folio under **Extensions → Folio**.
 
 For a large character library or lighter mobile use, the low-quality thumbnail option is recommended. Choose high-quality originals when portrait sharpness matters more than loading weight.
 
+## 🌍 Interface language
+
+Folio follows the **SillyTavern UI language** for the shelf, settings, chat drawer and dialogs. English is the fallback. Korean, Japanese, Simplified Chinese, Traditional Chinese, and Spanish translations are included. Character names, notes, and saved chat titles are never translated.
+
 ## ⚡ Lightweight behavior
 
 Folio is designed to avoid indexing or previewing the contents of an entire chat library.
@@ -77,7 +82,7 @@ Opening a selected chat is handed back to SillyTavern's normal chat-opening flow
 
 ## 💾 Storage and cleanup
 
-- Appearance, desktop/mobile column counts, and page-size settings, character and chat sort modes, pinned characters, and notes are stored in SillyTavern's extension settings. The old portrait-scale preference remains stored for rollback but no longer affects the visible layout.
+- Appearance, desktop/mobile column counts, page sizes, sort modes, pinned characters, per-character pinned chats, and notes are stored in SillyTavern's extension settings. The old portrait-scale preference remains stored for rollback but no longer affects the visible layout.
 - Search text, selected tag filters, and the current page are temporary view state and are not persisted.
 - Folio does not make copies of chat messages or create its own chat-content database.
 - **Clean up setting data** removes Folio's saved settings, sort choices, pins, and notes and restores the defaults. It does not delete character cards or chat files.
@@ -104,7 +109,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 |---|---|
 | **검색** | 캐릭터 이름으로 찾습니다. 이름 일부만 입력해도 검색됩니다. |
 | **태그** | SillyTavern 태그를 하나 이상 선택합니다. 여러 태그를 고르면 선택한 태그를 모두 가진 캐릭터만 표시됩니다. |
-| **Folio 제목 / 정렬 메뉴** | 최근 대화순, 이름 오름차순, 이름 내림차순, 대화량 많은 순으로 캐릭터를 정렬합니다. |
+| **Folio 제목 / 정렬 메뉴** | 최근 대화순, 이름 오름차순·내림차순, 대화량 많은 순, **랜덤 정렬**을 지원합니다. 랜덤을 다시 선택하면 새로 섞고, 페이지를 넘기거나 필터를 바꿀 때는 순서가 유지됩니다. 고정한 캐릭터는 위에 남습니다. |
 | **초상화 또는 이름 클릭** | 해당 캐릭터의 채팅 서랍을 엽니다. |
 | **초상화 길게 누르기 또는 우클릭** | 캐릭터를 선반 상단에 고정하거나 고정을 해제합니다. 고정한 캐릭터는 선택한 정렬 순서보다 위에 유지됩니다. |
 | **메모 영역 클릭** | 최대 100자의 짧은 메모를 추가하거나 수정합니다. 카드에는 보통 최대 3줄, 태그 줄이 없으면 최대 4줄까지 표시됩니다. |
@@ -120,9 +125,10 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 
 | 조작 | 기능 |
 |---|---|
-| **캐릭터 이름 / 정렬 메뉴** | 채팅 제목을 오름차순 또는 내림차순으로 정렬합니다. |
+| **캐릭터 이름 / 정렬 메뉴** | 채팅 제목을 오름차순 또는 내림차순으로 정렬하고, 고정한 채팅방은 맨 위에 표시합니다. |
+| **채팅방 이름 검색** | 선택한 캐릭터의 이미 불러온 채팅방 이름을 검색합니다. 입력할 때 새 파일을 열거나 추가 요청을 보내지 않습니다. |
 | **채팅 제목 클릭** | 선택한 채팅을 SillyTavern에서 엽니다. |
-| **채팅 제목 길게 누르기 또는 우클릭** | 이름 바꾸기와 삭제 메뉴를 엽니다. |
+| **채팅 제목 길게 누르기 또는 우클릭** | **상단 고정·고정 해제**, 이름 바꾸기, 삭제 메뉴를 엽니다. 고정은 캐릭터별로 저장하고 이름을 바꾸면 따라가며, 채팅방을 삭제하면 고정도 정리합니다. |
 | 데스크톱에서 채팅에 마우스를 올리면 나타나는 `×` | 확인 후 해당 채팅을 삭제합니다. 터치 기기에서는 길게 누르기 메뉴를 사용합니다. |
 | **새 대화 시작** | 캐릭터를 선택하고 새 채팅을 시작합니다. |
 | **페이지 버튼** | 채팅 목록이 설정한 페이지당 개수를 넘으면 채팅 페이지를 이동합니다. |
@@ -147,6 +153,10 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 
 캐릭터가 많거나 모바일에서 가볍게 사용하고 싶다면 저화질 썸네일을 권장합니다. 불러오기 부담보다 초상화의 선명도가 더 중요할 때는 고화질 원본을 선택하면 됩니다.
 
+## 🌍 화면 언어
+
+폴리오는 **SillyTavern의 UI 언어 설정**을 자동으로 따라가. 캐릭터 목록, 확장 설정, 정렬, 채팅방 목록과 확인창에 적용돼. 영어를 기본으로 한국어·일본어·중국어 간체·중국어 번체·스페인어를 지원하고 다른 언어는 영어로 표시해. 기존 캐릭터 이름·메모·채팅방 제목은 바꾸지 않아.
+
 ## ⚡ 가벼운 동작 구조
 
 Folio는 전체 채팅 라이브러리의 내용을 색인하거나 미리보기로 만들지 않도록 설계되어 있습니다.
@@ -163,7 +173,7 @@ Folio 자체가 SillyTavern의 **Recent Chats** 설정을 바꾸거나 기본 �
 
 ## 💾 저장과 데이터 정리
 
-- 화면 설정, 데스크톱·모바일 각각의 한 줄 표시 개수, 페이지당 개수, 캐릭터·채팅 정렬 방식, 고정한 캐릭터와 메모는 SillyTavern의 확장 설정에 저장됩니다. 이전 초상화 크기 설정값은 롤백을 위해 보존하지만 화면 배치에는 영향을 주지 않습니다.
+- 화면 설정, 데스크톱·모바일별 한 줄 표시 개수, 페이지당 개수, 캐릭터·채팅 정렬, 고정한 캐릭터와 채팅방, 메모는 SillyTavern의 확장 설정에 저장됩니다. 이전 초상화 크기 설정값은 롤백을 위해 보존하지만 화면 배치에는 영향을 주지 않습니다.
 - 검색어, 선택한 태그 필터와 현재 페이지는 임시 화면 상태이며 저장되지 않습니다.
 - Folio는 채팅 메시지의 사본을 만들거나 별도의 채팅 내용 데이터베이스를 만들지 않습니다.
 - **세팅 데이터 정리**는 Folio에 저장된 설정, 정렬 선택, 고정과 메모를 삭제하고 기본값으로 되돌립니다. 캐릭터 카드나 채팅 파일은 삭제하지 않습니다.
