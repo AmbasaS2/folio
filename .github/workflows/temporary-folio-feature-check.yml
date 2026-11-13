@@ -110,10 +110,49 @@ jobs:
           assert(js.includes("removePinnedChatId(avatar, chat.fileId)"));
           assert(js.includes("migratePinnedChatsForAvatar(oldAvatar, newAvatar)"));
           assert(js.includes("deletePinnedChatsForAvatar(avatar)"));
+          // Portrait page size is horizontal columns × vertical rows, not the legacy fixed count.
+          const settingsDefs=between('const PORTRAIT_SCALES = ', 'const DEFAULT_SORT_MODE = ');
+          const settingReader=between('function normalizeSettingValue(', 'function isRuntimeCurrent(');
+          const pageCalc=between('function getPortraitsPerPage(', 'function handlePortraitPageBreakpointChange(');
+          const legacyStore={extensionSettings:{characterFolio:{characterPageSize:3,portraitScale:120}}};
+          const pageCtx={
+            MODULE_NAME:'characterFolio',
+            safeContext:()=>legacyStore,
+            matchMedia:()=>({matches:pageCtx.isMobile}),
+            isMobile:false,
+          };
+          vm.createContext(pageCtx);
+          vm.runInContext(settingsDefs+settingReader+pageCalc,pageCtx);
+          const getSettings=()=>vm.runInContext('getFolioSettings()',pageCtx);
+          const pageSize=()=>vm.runInContext('getPortraitsPerPage()',pageCtx);
+          assert.equal(getSettings().desktopColumns,3);
+          assert.equal(getSettings().mobileColumns,3);
+          assert.equal(getSettings().portraitRows,4);
+          assert.equal(getSettings().characterPageSize,3,'Legacy fixed value must remain available for rollback');
+          assert.equal(pageSize(),12,'Default portrait page has 3 × 4');
+          pageCtx.isMobile=true;
+          assert.equal(pageSize(),12);
+          legacyStore.extensionSettings.characterFolio.desktopColumns=7;
+          legacyStore.extensionSettings.characterFolio.mobileColumns=5;
+          legacyStore.extensionSettings.characterFolio.portraitRows=8;
+          assert.equal(pageSize(),40,'Mobile uses mobile horizontal count × rows');
+          pageCtx.isMobile=false;
+          assert.equal(pageSize(),56,'Desktop uses desktop horizontal count × rows');
+          assert.equal(legacyStore.extensionSettings.characterFolio.characterPageSize,3,'Legacy fixed count was not erased');
+          const resetOld=legacyStore.extensionSettings.characterFolio;
+          resetOld.portraitRows=999;
+          assert.equal(getSettings().portraitRows,4,'Out-of-range rows should use default');
+          assert(js.includes("key === 'desktopColumns' || key === 'mobileColumns' || key === 'portraitRows'"));
+          assert(js.includes('bindPortraitPageBreakpoint();'));
+          assert(js.includes('unbindPortraitPageBreakpoint();'));
+          assert(js.includes("query.addEventListener('change', handlePortraitPageBreakpointChange)"));
+          const characterRender=between('function renderCharacterGrid(', 'function updateVisibleNote(');
+          assert(characterRender.includes('const portraitsPerPage = getPortraitsPerPage(settings);'));
+          assert(!characterRender.includes('settings.characterPageSize'), 'Legacy page count must not drive pagination');
           // Native i18n and numeric options, with unchanged stored names/IDs.
           const start='const UI_ENGLISH = Object.freeze(';
           const en=JSON.parse(between(start,');\nfunction tr(').slice(start.length));
-          assert.equal(Object.keys(en).length,89);
+          assert.equal(Object.keys(en).length,92);
           const locales=['ko-kr','ja-jp','zh-cn','zh-tw','es-es'];
           for(const locale of locales){
             const data=JSON.parse(fs.readFileSync('i18n/'+locale+'.json','utf8'));
@@ -128,14 +167,25 @@ jobs:
             assert.equal(manifest.i18n[locale],'i18n/'+locale+'.json');
           }
           const htmlKeys=[...html.matchAll(/data-folio-i18n="([^"]+)"/g)].map(x=>x[1]);
-          assert.equal(htmlKeys.length,17);
+          assert.equal(htmlKeys.length,18);
           for(const key of htmlKeys)assert(Object.hasOwn(en,key));
           assert.equal([...html.matchAll(/data-folio-count="/g)].length,11);
+          assert.equal([...html.matchAll(/data-folio-rows="/g)].length,8);
+          assert(html.includes('<option value="4" selected data-folio-rows="4">4줄</option>'));
+          assert(!html.includes('id="folio-character-page-size"'));
+          assert(html.includes('초상화 노출 설정')&&html.includes('노출 개수')&&html.includes('세로 줄 수'));
+          const orderedIds=['folio-enabled','folio-image-quality','folio-portrait-ratio','folio-desktop-columns','folio-mobile-columns','folio-portrait-rows','folio-corner-style','folio-chat-page-size','folio-font-scale','folio-data-cleanup'];
+          const positions=orderedIds.map(id=>html.indexOf('id="'+id+'"'));
+          assert(positions.every(p=>p>=0));
+          assert(positions.every((p,i)=>i===0||p>positions[i-1]),'Settings controls out of requested order');
+          assert(css.includes('grid-template-columns: repeat(3, minmax(0, 1fr))'));
+          assert(css.includes('padding-block: 0 24px;'));
+          assert(js.includes("option.textContent = tr('unit.rows'"));
           assert(js.includes("option.textContent = tr('unit.count'"));
           assert(css.includes('.folio-chat-search-wrap'));
           assert(css.includes('.folio-chat-pinned-icon'));
           assert.equal(manifest.version,'1.4.0');
-          console.log('Folio random, pin, search, settings and i18n checks passed.');
+          console.log('Folio random, pin, search, portrait row pagination, responsive breakpoint and i18n checks passed.');
           NODE
       - name: Check patch whitespace
         run: git diff --check HEAD~1 HEAD
