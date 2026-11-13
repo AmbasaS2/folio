@@ -690,6 +690,10 @@
     background: color-mix(in srgb, var(--SmartThemeBlurTintColor) 96%, transparent);
 }
 
+.folio-drawer-header-with-search {
+    grid-template-columns: minmax(0, 1fr) minmax(110px, 40%) 40px;
+}
+
 .folio-close {
     display: grid;
     width: 38px;
@@ -793,10 +797,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    flex: 0 0 auto;
-    width: 50%;
+    width: 100%;
     min-width: 0;
-    margin: 3px 0 10px auto;
+    margin: 0;
 }
 
 .folio-chat-search-icon {
@@ -1352,6 +1355,31 @@
 @media screen and (max-width: 1000px) {
     .folio-shortcuts-host .welcomeShortcuts a span {
         display: none;
+    }
+}
+
+/* On very narrow viewports, keep the title and close control together and
+   place the search on the next line, still anchored to the right. */
+@media (max-width: 380px) {
+    .folio-drawer-header-with-search {
+        grid-template-columns: minmax(0, 1fr) 40px;
+    }
+
+    .folio-drawer-header-with-search .folio-drawer-character {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .folio-drawer-header-with-search .folio-close {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .folio-drawer-header-with-search .folio-chat-search-wrap {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: end;
+        width: 50%;
     }
 }
 
