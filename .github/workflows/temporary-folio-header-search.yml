@@ -1,0 +1,68 @@
+name: Folio header search regression
+on:
+  push:
+    branches:
+      - fix/drawer-search-inline-header-20261113
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: JavaScript syntax
+        run: node --check index.js
+      - name: Verify chat search header placement, narrow fallback and focus safety
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const js = fs.readFileSync('index.js','utf8');
+          const css = fs.readFileSync('style.css','utf8');
+          const manifest = JSON.parse(fs.readFileSync('manifest.json','utf8'));
+          const ko = JSON.parse(fs.readFileSync('i18n/ko-kr.json','utf8'));
+          const slice = (start,end) => {
+            const a=js.indexOf(start),b=js.indexOf(end,a);
+            assert(a>=0 && b>a, 'Missing source section '+start);
+            return js.slice(a,b);
+          };
+          const header = slice('function buildDrawerHeader(', 'function renderDrawerState(');
+          const rows = slice('function renderChatRows(', 'async function fetchCharacterChats(');
+          const open = slice('async function openCharacterDrawer(', 'function normalizeChatId(');
+          assert(header.includes("header.classList.add('folio-drawer-header-with-search')"));
+          assert(header.includes("const searchIcon = createElement('i', 'folio-chat-search-icon fa-solid fa-magnifying-glass')"));
+          assert(header.includes("searchIcon.setAttribute('aria-hidden', 'true')"));
+          assert(header.includes("search.placeholder = tr('search.chats')"));
+          assert(header.includes("search.addEventListener('input', () => {"));
+          assert(header.includes("if (state?.body?.isConnected && getAvatarKey(state.character) === getAvatarKey(character))"));
+          assert(header.includes('header.append(characterBlock, searchWrap);'));
+          assert(header.includes('header.appendChild(characterBlock);'), 'Memo header remains unchanged');
+          assert(header.includes('header.appendChild(close);'), 'Close button follows search in DOM');
+          assert(!rows.includes("searchWrap"), 'Search must no longer be created inside replaceable chat rows');
+          assert(rows.includes('container.replaceChildren(results);'));
+          assert(rows.includes('results.replaceChildren(content, footer);'));
+          assert(rows.includes('const query = currentChatSearch.trim().toLocaleLowerCase();'));
+          assert(open.includes("currentChatSearch = '';"));
+          assert(open.includes("chatSort: true,"));
+          assert(ko['folio.search.chats'] === '채팅방 검색');
+          assert(manifest.version === '1.5.6');
+          assert(css.includes('.folio-drawer-header-with-search {\n    grid-template-columns: minmax(0, 1fr) minmax(110px, 40%) 40px;\n}'));
+          const styles = css.slice(css.indexOf('.folio-chat-search-wrap {'),css.indexOf('.folio-chat-results {'));
+          assert(styles.includes('width: 100%;'));
+          assert(styles.includes('font-size: 0.9em;'));
+          assert(styles.includes('.folio-chat-search-icon {'));
+          assert(css.includes('@media (max-width: 380px)'));
+          const fallback = css.slice(css.indexOf('@media (max-width: 380px)'));
+          assert(fallback.includes('.folio-drawer-header-with-search .folio-chat-search-wrap {'));
+          assert(fallback.includes('grid-row: 2;'));
+          assert(fallback.includes('grid-column: 1 / -1;'));
+          assert(fallback.includes('justify-self: end;'));
+          assert(fallback.includes('width: 50%;'));
+          assert(fallback.includes('.folio-drawer-header-with-search .folio-close {'));
+          assert(fallback.includes('grid-row: 1;'));
+          console.log('Header search placement, stable focus, mobile fallback and prior localized input verified.');
+          NODE
+      - name: Patch whitespace
+        run: git diff --check HEAD~1 HEAD
