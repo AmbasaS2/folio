@@ -1,0 +1,134 @@
+name: Folio responsive portrait grid validation
+on:
+  push:
+    branches:
+      - feature/responsive-portrait-columns-20261113
+  pull_request:
+    branches:
+      - main
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Check JavaScript syntax
+        run: node --check index.js
+      - name: Check column counts, saved settings, layout and native controls
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const assert = require('node:assert/strict');
+          const js = fs.readFileSync('index.js','utf8');
+          const css = fs.readFileSync('style.css','utf8');
+          const html = fs.readFileSync('settings.html','utf8');
+          const readme = fs.readFileSync('README.md','utf8');
+          const between = (text,start,end) => {
+            const a=text.indexOf(start);
+            const b=text.indexOf(end,a);
+            assert(a>=0 && b>a,'Missing source section: '+start);
+            return text.slice(a,b);
+          };
+          const defs=between(js,'const PORTRAIT_SCALES = ','const DEFAULT_SORT_MODE = ');
+          const read=between(js,'function normalizeSettingValue(', 'function isRuntimeCurrent(');
+          const save=between(js,'function savePreference(', 'function getStoredPinnedAvatars(');
+          const apply=between(js,'function applyVisualSettings()', 'function handlePreferenceChange(');
+          class MockHTMLElement { constructor(){
+            this.values={};
+            this.style={
+              setProperty:(k,v)=>{this.values[k]=v},
+              removeProperty:k=>{delete this.values[k]},
+            };
+            this.dataset={};
+          }}
+          const persisted={ extensionSettings:{ characterFolio:{portraitScale:50} },saveSettingsDebounced(){this.saved=(this.saved||0)+1;}};
+          const root=new MockHTMLElement();
+          let changed=[];
+          const sandbox={
+            MODULE_NAME:'characterFolio',
+            safeContext:()=>persisted,
+            context:()=>persisted,
+            ensureModuleSettings:ctx=>ctx.extensionSettings.characterFolio ||= {},
+            cleanEmptySettings:()=>{},
+            handlePreferenceChange:key=>changed.push(key),
+            scheduleCardTagLayout:()=>{},
+            HTMLElement:MockHTMLElement,
+            rootElement:root,
+            overlayElement:null,
+            settingsElement:null,
+            activeMenuElement:null,
+          };
+          vm.createContext(sandbox);
+          vm.runInContext(defs+read+save+apply,sandbox);
+          const settings=()=>vm.runInContext('getFolioSettings()',sandbox);
+          const normalize=(key,value)=>{
+            sandbox._key=key; sandbox._value=value;
+            return vm.runInContext('normalizeSettingValue(_key,_value)',sandbox);
+          };
+          const update=(key,value)=>{
+            sandbox._key=key; sandbox._value=value;
+            return vm.runInContext('savePreference(_key,_value)',sandbox);
+          };
+          assert.equal(settings().desktopColumns,3);
+          assert.equal(settings().mobileColumns,3);
+          assert.equal(settings().portraitScale,50,'Legacy portrait scale must remain stored');
+          for(const x of [2,3,4,5,6,7])assert.equal(normalize('desktopColumns',String(x)),x);
+          for(const x of [1,2,3,4,5])assert.equal(normalize('mobileColumns',String(x)),x);
+          for(const x of [0,1,8,-1,100])assert.equal(normalize('desktopColumns',String(x)),3);
+          for(const x of [0,6,-1,100])assert.equal(normalize('mobileColumns',String(x)),3);
+          assert(update('desktopColumns','7'));
+          assert(update('mobileColumns','5'));
+          assert.equal(settings().desktopColumns,7);
+          assert.equal(settings().mobileColumns,5);
+          assert.equal(persisted.extensionSettings.characterFolio.portraitScale,50);
+          vm.runInContext('applyVisualSettings()',sandbox);
+          assert.equal(root.values['--folio-desktop-columns'],'7');
+          assert.equal(root.values['--folio-mobile-columns'],'5');
+          assert(!Object.hasOwn(root.values,'--folio-card-min-width'));
+          assert(!Object.hasOwn(root.values,'--folio-mobile-card-min-width'));
+          assert(!Object.hasOwn(root.values,'--folio-pin-scale'));
+          assert.deepEqual(changed,['desktopColumns','mobileColumns']);
+          assert(update('desktopColumns','3'));
+          assert(!Object.hasOwn(persisted.extensionSettings.characterFolio,'desktopColumns'));
+          assert.equal(settings().desktopColumns,3);
+          assert.equal(settings().mobileColumns,5);
+          assert.equal(persisted.extensionSettings.characterFolio.portraitScale,50);
+          assert(persisted.saved>=3);
+          assert(css.includes('grid-template-columns: repeat(var(--folio-desktop-columns, 3), minmax(0, 1fr))'));
+          assert(css.includes('grid-template-columns: repeat(var(--folio-mobile-columns, 3), minmax(0, 1fr))'));
+          assert(css.includes('@media (max-width: 38rem)'));
+          assert(!css.includes('repeat(auto-fill'));
+          assert(!css.includes('min-height: 32px;\n    margin: 0;\n    padding-block: 4px;'));
+          assert(!css.includes('--folio-card-min-width:'));
+          assert(!css.includes('--folio-mobile-card-min-width:'));
+          const parseOptions=(id)=>{
+            const re=new RegExp('<select id="'+id+'" class="text_pole">([\\s\\S]*?)<\\/select>');
+            const body=html.match(re)?.[1];
+            assert(body,'Missing '+id);
+            return [...body.matchAll(/<option value="(\d+)"( selected)?>([^<]+)<\/option>/g)].map(x=>({value:Number(x[1]),selected:!!x[2],label:x[3]}));
+          };
+          const desktopOptions=parseOptions('folio-desktop-columns');
+          const mobileOptions=parseOptions('folio-mobile-columns');
+          assert.deepEqual(desktopOptions.map(x=>x.value),[2,3,4,5,6,7]);
+          assert.deepEqual(mobileOptions.map(x=>x.value),[1,2,3,4,5]);
+          assert.deepEqual(desktopOptions.filter(x=>x.selected).map(x=>x.value),[3]);
+          assert.deepEqual(mobileOptions.filter(x=>x.selected).map(x=>x.value),[3]);
+          assert(html.includes('한 줄에 표시할 개수'));
+          assert(html.includes('데스크톱'));
+          assert(html.includes('모바일 기기'));
+          assert(html.includes('페이지당 초상화 개수'));
+          assert(html.includes('페이지당 채팅 개수'));
+          assert(html.includes('>12개</output>'));
+          assert(!html.includes('folio-portrait-scale'));
+          assert(!js.includes("id: 'folio-portrait-scale'"));
+          assert(js.includes("values: CHARACTER_PAGE_SIZES, unit: '개'"));
+          assert(readme.includes('**Portraits per row**'));
+          assert(readme.includes('**페이지당 초상화 개수**'));
+          console.log('Folio responsive columns and persisted-settings checks passed.');
+          NODE
+      - name: Check patch whitespace
+        run: git diff --check HEAD~1 HEAD
