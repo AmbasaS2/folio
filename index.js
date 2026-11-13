@@ -91,6 +91,7 @@ const SORT_OPTIONS = Object.freeze([
     { value: 'name-asc', label: '이름 오름차순' },
     { value: 'name-desc', label: '이름 내림차순' },
     { value: 'chat-size-desc', label: '대화량 많은 순' },
+    { value: 'random', label: '랜덤 정렬' },
 ]);
 const SORT_MODE_VALUES = new Set(SORT_OPTIONS.map(option => option.value));
 const DEFAULT_CHAT_SORT_MODE = 'title-desc';
@@ -146,6 +147,7 @@ let lifecycleRevision = 0;
 let pendingCharacterRefresh = false;
 let enabledSaveQueue = null;
 const sessionRecentByAvatar = new Map();
+const randomOrderByAvatar = new Map();
 
 function context() {
     if (!globalThis.SillyTavern?.getContext) {
@@ -210,8 +212,40 @@ function compareByRecent(left, right) {
     return collator.compare(getCharacterName(left.character), getCharacterName(right.character));
 }
 
+function shuffleCharacterOrder(contextValue = safeContext()) {
+    const avatars = Array.isArray(contextValue?.characters)
+        ? contextValue.characters.map(getAvatarKey).filter(Boolean)
+        : [];
+    for (let i = avatars.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [avatars[i], avatars[j]] = [avatars[j], avatars[i]];
+    }
+    if (avatars.length > 1 && avatars.every((avatar, index) => randomOrderByAvatar.get(avatar) === index)) {
+        avatars.push(avatars.shift());
+    }
+    randomOrderByAvatar.clear();
+    avatars.forEach((avatar, rank) => randomOrderByAvatar.set(avatar, rank));
+}
+
+function ensureRandomCharacterOrder(contextValue = safeContext()) {
+    const characters = contextValue?.characters;
+    if (!Array.isArray(characters)) return;
+    if (!randomOrderByAvatar.size) {
+        shuffleCharacterOrder(contextValue);
+        return;
+    }
+    for (const character of characters) {
+        const avatar = getAvatarKey(character);
+        if (avatar && !randomOrderByAvatar.has(avatar)) randomOrderByAvatar.set(avatar, randomOrderByAvatar.size);
+    }
+}
+
 function compareCharacterRecords(left, right, sortMode = currentSortMode) {
     const nameComparison = collator.compare(getCharacterName(left.character), getCharacterName(right.character));
+    if (sortMode === 'random') {
+        return (randomOrderByAvatar.get(getAvatarKey(left.character)) ?? Number.MAX_SAFE_INTEGER)
+            - (randomOrderByAvatar.get(getAvatarKey(right.character)) ?? Number.MAX_SAFE_INTEGER) || nameComparison;
+    }
     if (sortMode === 'name-asc') return nameComparison;
     if (sortMode === 'name-desc') return -nameComparison;
     if (sortMode === 'chat-size-desc') {
@@ -224,6 +258,7 @@ function compareCharacterRecords(left, right, sortMode = currentSortMode) {
 function getCharactersForDisplay(contextValue = safeContext(), sortMode = currentSortMode) {
     const characters = contextValue?.characters;
     if (!Array.isArray(characters)) return [];
+    if (sortMode === 'random') ensureRandomCharacterOrder(contextValue);
 
     const sorted = characters
         .map((character, characterId) => ({ character, characterId }))
@@ -490,7 +525,9 @@ function saveNote(avatar, rawValue) {
 }
 
 function saveSortMode(sortMode) {
-    if (!SORT_MODE_VALUES.has(sortMode) || sortMode === currentSortMode) return false;
+    if (!SORT_MODE_VALUES.has(sortMode)) return false;
+    if (sortMode === 'random') shuffleCharacterOrder();
+    if (sortMode === currentSortMode && sortMode !== 'random') return false;
     const ctx = context();
     currentSortMode = sortMode;
 
@@ -1493,6 +1530,7 @@ async function requestFolioDataCleanup(button, container = settingsElement) {
         currentCharacterPage = 1;
         currentChatPage = 1;
         sessionRecentByAvatar.clear();
+        randomOrderByAvatar.clear();
         closeMenu();
         closeDrawer({ restoreFocus: false });
         syncSettingsControls(container);
@@ -2466,6 +2504,7 @@ function stopFolioRuntime() {
     currentChatSortMode = DEFAULT_CHAT_SORT_MODE;
     pendingCharacterRefresh = false;
     sessionRecentByAvatar.clear();
+    randomOrderByAvatar.clear();
 }
 
 function startFolioRuntime() {
@@ -2516,6 +2555,10 @@ function handleCharacterRenamed(oldAvatar, newAvatar) {
         sessionRecentByAvatar.set(newAvatar, sessionRecentByAvatar.get(oldAvatar));
         sessionRecentByAvatar.delete(oldAvatar);
     }
+    if (randomOrderByAvatar.has(oldAvatar)) {
+        randomOrderByAvatar.set(newAvatar, randomOrderByAvatar.get(oldAvatar));
+        randomOrderByAvatar.delete(oldAvatar);
+    }
     if (!folioRuntimeActive) return;
     pendingCharacterRefresh = true;
     if (activeDrawerAvatar === oldAvatar) closeDrawer({ restoreFocus: false });
@@ -2527,6 +2570,7 @@ function handleCharacterDeleted(payload) {
     deleteNoteForAvatar(avatar);
     deletePinnedAvatar(avatar);
     sessionRecentByAvatar.delete(avatar);
+    randomOrderByAvatar.delete(avatar);
     if (!folioRuntimeActive) return;
     pendingCharacterRefresh = true;
     if (activeDrawerAvatar === avatar) closeDrawer({ restoreFocus: false });
@@ -2614,6 +2658,7 @@ function cleanup() {
     lastFocusedElement = null;
     cleaningFolioData = false;
     sessionRecentByAvatar.clear();
+    randomOrderByAvatar.clear();
     initialized = false;
 }
 
