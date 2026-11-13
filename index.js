@@ -81,23 +81,23 @@ const SELECT_SETTING_CONTROLS = Object.freeze([
     { id: 'folio-corner-style', key: 'cornerStyle' },
 ]);
 const RANGE_SETTING_CONTROLS = Object.freeze([
-    { id: 'folio-character-page-size', key: 'characterPageSize', values: CHARACTER_PAGE_SIZES, unit: '개', indexed: true },
-    { id: 'folio-chat-page-size', key: 'chatPageSize', values: CHAT_PAGE_SIZES, unit: '개' },
+    { id: 'folio-character-page-size', key: 'characterPageSize', values: CHARACTER_PAGE_SIZES, unit: 'count', indexed: true },
+    { id: 'folio-chat-page-size', key: 'chatPageSize', values: CHAT_PAGE_SIZES, unit: 'count' },
     { id: 'folio-font-scale', key: 'fontScale', values: FONT_SCALES, unit: '%', live: true },
 ]);
 const DEFAULT_SORT_MODE = 'recent';
 const SORT_OPTIONS = Object.freeze([
-    { value: 'recent', label: '최근 대화순' },
-    { value: 'name-asc', label: '이름 오름차순' },
-    { value: 'name-desc', label: '이름 내림차순' },
-    { value: 'chat-size-desc', label: '대화량 많은 순' },
-    { value: 'random', label: '랜덤 정렬' },
+    { value: 'recent', label: 'Recently chatted' },
+    { value: 'name-asc', label: 'Name (A–Z)' },
+    { value: 'name-desc', label: 'Name (Z–A)' },
+    { value: 'chat-size-desc', label: 'Most chat data' },
+    { value: 'random', label: 'Random order' },
 ]);
 const SORT_MODE_VALUES = new Set(SORT_OPTIONS.map(option => option.value));
 const DEFAULT_CHAT_SORT_MODE = 'title-desc';
 const CHAT_SORT_OPTIONS = Object.freeze([
-    { value: 'title-desc', label: '제목 내림차순' },
-    { value: 'title-asc', label: '제목 오름차순' },
+    { value: 'title-desc', label: 'Title (Z–A)' },
+    { value: 'title-asc', label: 'Title (A–Z)' },
 ]);
 const CHAT_SORT_MODE_VALUES = new Set(CHAT_SORT_OPTIONS.map(option => option.value));
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
@@ -1650,7 +1650,7 @@ function syncSettingsControls(container, settings = getFolioSettings()) {
 
         const value = settings[key];
         control.value = String(indexed ? values.indexOf(value) : value);
-        const label = unit === '개' ? tr('unit.count', value) : `${value}${unit}`;
+        const label = unit === 'count' ? tr('unit.count', value) : `${value}${unit}`;
         output.value = label;
         control.setAttribute('aria-valuetext', label);
     }
@@ -1774,7 +1774,7 @@ function bindSettingsControls(container) {
         };
         const syncValue = () => {
             const value = readValue();
-            const label = unit === '개' ? tr('unit.count', value) : `${value}${unit}`;
+            const label = unit === 'count' ? tr('unit.count', value) : `${value}${unit}`;
             output.value = label;
             control.setAttribute('aria-valuetext', label);
             return value;
