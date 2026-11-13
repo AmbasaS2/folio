@@ -3,8 +3,8 @@
     --folio-radius-medium: 7px;
     --folio-radius-small: 5px;
     --folio-gap: clamp(12px, 2vw, 20px);
-    --folio-card-min-width: 14.5rem;
-    --folio-mobile-card-min-width: 142px;
+    --folio-desktop-columns: 3;
+    --folio-mobile-columns: 3;
     --folio-content-font-size: 100%;
     --folio-pin-scale: 1;
     width: 100%;
@@ -258,7 +258,7 @@
 
 .folio-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--folio-card-min-width)), 1fr));
+    grid-template-columns: repeat(var(--folio-desktop-columns, 3), minmax(0, 1fr));
     gap: clamp(17px, 2.4vw, 25px) var(--folio-gap);
     align-items: stretch;
     justify-content: stretch;
@@ -1098,10 +1098,20 @@
 
 .folio-setting-row select {
     width: 100%;
-    min-height: 32px;
-    margin: 0;
-    padding-block: 4px;
-    font-size: 0.95em;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.folio-column-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.folio-column-option {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
 }
 
 .folio-range-title {
@@ -1174,13 +1184,7 @@
     }
 
     .folio-grid {
-        grid-template-columns: repeat(
-            auto-fill,
-            minmax(
-                min(100%, var(--folio-mobile-card-min-width)),
-                1fr
-            )
-        );
+        grid-template-columns: repeat(var(--folio-mobile-columns, 3), minmax(0, 1fr));
         justify-content: stretch;
         gap: 18px clamp(6px, 2.4vw, 10px);
     }
