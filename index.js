@@ -43,17 +43,19 @@ const NOTE_LIMIT = 100;
 const CHAT_LIST_ENDPOINT = '/api/characters/chats';
 const LONG_PRESS_DELAY = 550;
 const LONG_PRESS_DISTANCE = 10;
-const PORTRAIT_BASE_WIDTH_REM = 14.5;
-const PORTRAIT_MOBILE_BASE_WIDTH_PX = 142;
 const PORTRAIT_SCALES = Object.freeze([50, 60, 70, 80, 90, 100, 110, 120]);
+const DESKTOP_COLUMN_COUNTS = Object.freeze([2, 3, 4, 5, 6, 7]);
+const MOBILE_COLUMN_COUNTS = Object.freeze([1, 2, 3, 4, 5]);
 const CHARACTER_PAGE_SIZES = Object.freeze([3, 4, 6, 8, 9, 12, 15, 16]);
 const FONT_SCALES = Object.freeze([80, 90, 100, 110, 120, 130, 140, 150]);
 const CHAT_PAGE_SIZES = Object.freeze([5, 10, 15, 20]);
 const DEFAULT_SETTINGS = Object.freeze({
     enabled: true,
     imageQuality: 'high',
-    portraitScale: 100,
+    portraitScale: 100, // Retained as legacy setting data for safe rollback; no longer controls layout.
     portraitRatio: 'portrait',
+    desktopColumns: 3,
+    mobileColumns: 3,
     characterPageSize: 12,
     fontScale: 100,
     cornerStyle: 'round',
@@ -64,6 +66,8 @@ const SETTING_OPTIONS = Object.freeze({
     imageQuality: new Set(['low', 'high']),
     portraitScale: new Set(PORTRAIT_SCALES),
     portraitRatio: new Set(['portrait', 'square']),
+    desktopColumns: new Set(DESKTOP_COLUMN_COUNTS),
+    mobileColumns: new Set(MOBILE_COLUMN_COUNTS),
     characterPageSize: new Set(CHARACTER_PAGE_SIZES),
     fontScale: new Set(FONT_SCALES),
     cornerStyle: new Set(['sharp', 'round']),
@@ -72,11 +76,12 @@ const SETTING_OPTIONS = Object.freeze({
 const SELECT_SETTING_CONTROLS = Object.freeze([
     { id: 'folio-image-quality', key: 'imageQuality' },
     { id: 'folio-portrait-ratio', key: 'portraitRatio' },
+    { id: 'folio-desktop-columns', key: 'desktopColumns' },
+    { id: 'folio-mobile-columns', key: 'mobileColumns' },
     { id: 'folio-corner-style', key: 'cornerStyle' },
 ]);
 const RANGE_SETTING_CONTROLS = Object.freeze([
-    { id: 'folio-portrait-scale', key: 'portraitScale', values: PORTRAIT_SCALES, unit: '%', live: true },
-    { id: 'folio-character-page-size', key: 'characterPageSize', values: CHARACTER_PAGE_SIZES, unit: '명', indexed: true },
+    { id: 'folio-character-page-size', key: 'characterPageSize', values: CHARACTER_PAGE_SIZES, unit: '개', indexed: true },
     { id: 'folio-chat-page-size', key: 'chatPageSize', values: CHAT_PAGE_SIZES, unit: '개' },
     { id: 'folio-font-scale', key: 'fontScale', values: FONT_SCALES, unit: '%', live: true },
 ]);
@@ -328,7 +333,7 @@ function ensureModuleSettings(contextValue) {
 function normalizeSettingValue(key, rawValue) {
     const options = SETTING_OPTIONS[key];
     if (!options) return DEFAULT_SETTINGS[key];
-    if (key === 'portraitScale' || key === 'characterPageSize' || key === 'fontScale' || key === 'chatPageSize') {
+    if (key === 'portraitScale' || key === 'desktopColumns' || key === 'mobileColumns' || key === 'characterPageSize' || key === 'fontScale' || key === 'chatPageSize') {
         const numeric = Number(rawValue);
         return options.has(numeric) ? numeric : DEFAULT_SETTINGS[key];
     }
@@ -342,6 +347,8 @@ function getFolioSettings(contextValue = safeContext()) {
         imageQuality: normalizeSettingValue('imageQuality', stored?.imageQuality),
         portraitScale: normalizeSettingValue('portraitScale', stored?.portraitScale),
         portraitRatio: normalizeSettingValue('portraitRatio', stored?.portraitRatio),
+        desktopColumns: normalizeSettingValue('desktopColumns', stored?.desktopColumns),
+        mobileColumns: normalizeSettingValue('mobileColumns', stored?.mobileColumns),
         characterPageSize: normalizeSettingValue('characterPageSize', stored?.characterPageSize),
         fontScale: normalizeSettingValue('fontScale', stored?.fontScale),
         cornerStyle: normalizeSettingValue('cornerStyle', stored?.cornerStyle),
@@ -1365,13 +1372,12 @@ function applyVisualSettings() {
     if (rootElement instanceof HTMLElement) {
         rootElement.style.removeProperty('font-size');
         rootElement.style.setProperty('--folio-content-font-size', contentFontSize);
-        const scaleFactor = settings.portraitScale / 100;
-        rootElement.style.setProperty('--folio-pin-scale', String(Math.min(1, scaleFactor)));
-        const cardMinWidth = PORTRAIT_BASE_WIDTH_REM * scaleFactor;
-        const mobileCardMinWidth = PORTRAIT_MOBILE_BASE_WIDTH_PX * scaleFactor;
-        rootElement.style.setProperty('--folio-card-min-width', `${cardMinWidth.toFixed(3)}rem`);
-        rootElement.style.setProperty('--folio-mobile-card-min-width', `${mobileCardMinWidth.toFixed(1)}px`);
-        rootElement.dataset.portraitScale = String(settings.portraitScale);
+        rootElement.style.setProperty('--folio-desktop-columns', String(settings.desktopColumns));
+        rootElement.style.setProperty('--folio-mobile-columns', String(settings.mobileColumns));
+        rootElement.style.removeProperty('--folio-card-min-width');
+        rootElement.style.removeProperty('--folio-mobile-card-min-width');
+        rootElement.style.removeProperty('--folio-pin-scale');
+        delete rootElement.dataset.portraitScale;
         rootElement.dataset.portraitRatio = settings.portraitRatio;
     }
     for (const element of [overlayElement, activeMenuElement]) {
