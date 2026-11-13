@@ -53,8 +53,7 @@ Configure Folio under **Extensions → Folio**.
 | **Enable Folio** | Shows or hides Folio on the welcome screen. |
 | **Portrait quality** | Uses low-quality thumbnails or high-quality original portraits. |
 | **Portrait ratio** | Displays portraits vertically at 2:3 or as squares at 1:1. |
-| **Portraits per row** | Set desktop (2–7) and mobile (1–5) column counts independently; both default to 3. Layout uses the mobile count at viewport widths of 38rem or less and the desktop count above that. Settings are saved separately. |
-| **Portraits per page** | Shows 3, 4, 6, 8, 9, 12, 15, or 16 portraits per page. The default is 12. |
+| **Portrait display settings** | Choose the number across for **desktop (2–7)** and **mobile (1–5)** independently (both default to 3), plus the number of **vertical rows per page (1–8; default 4)**. Pages show *columns × rows* portraits: 3 × 4 = 12 by default. Below 38rem viewport width, the mobile count applies; changing across the breakpoint updates page length automatically. |
 | **Chats per page** | Shows 5, 10, 15, or 20 chats per page. The default is 10. |
 | **Font size** | Adjusts Folio's content text from 80% to 150%. |
 | **Corners** | Switches between sharp and rounded corners. |
@@ -82,7 +81,7 @@ Opening a selected chat is handed back to SillyTavern's normal chat-opening flow
 
 ## 💾 Storage and cleanup
 
-- Appearance, desktop/mobile column counts, page sizes, sort modes, pinned characters, per-character pinned chats, and notes are stored in SillyTavern's extension settings. The old portrait-scale preference remains stored for rollback but no longer affects the visible layout.
+- Appearance, desktop/mobile horizontal counts, shared portrait rows per page, chat page size, sort modes, pinned characters, per-character pinned chats, and notes are stored in SillyTavern's extension settings. Legacy portrait-scale and fixed portrait-page-size preferences remain stored for rollback but no longer affect the layout or pagination.
 - Search text, selected tag filters, and the current page are temporary view state and are not persisted.
 - Folio does not make copies of chat messages or create its own chat-content database.
 - **Clean up setting data** removes Folio's saved settings, sort choices, pins, and notes and restores the defaults. It does not delete character cards or chat files.
@@ -144,8 +143,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 | **Folio 활성화** | 시작 화면에서 Folio를 표시하거나 숨깁니다. |
 | **초상화 화질** | 저화질 썸네일 또는 고화질 원본 초상화를 사용합니다. |
 | **초상화 비율** | 세로형 2:3 또는 정사각형 1:1로 표시합니다. |
-| **한 줄에 표시할 개수** | **데스크톱** 2~7개, **모바일 기기** 1~5개를 각각 선택합니다. 기본값은 모두 3개이며 별도로 저장됩니다. 화면 폭 38rem(약 608px) 이하는 모바일 설정, 그보다 넓으면 데스크톱 설정을 적용합니다. |
-| **페이지당 초상화 개수** | 한 페이지에 3, 4, 6, 8, 9, 12, 15, 16개 중 하나를 표시합니다. 기본값은 12개입니다. |
+| **초상화 노출 설정** | **가로 (🖥️)** 2~7개, **가로 (📱)** 1~5개를 각각 선택하고, **세로 줄 수**는 1~8줄 중 선택합니다. 기본값은 가로 각각 3개·세로 4줄로 **한 페이지에 12개**입니다. 페이지당 초상화 수는 가로 개수 × 세로 줄 수로 자동 계산됩니다. 화면 폭 38rem(약 608px) 이하에서는 모바일 가로 개수를 사용하며, 화면 크기에 따라 페이지당 개수도 갱신됩니다. |
 | **페이지당 채팅 개수** | 한 페이지에 5, 10, 15, 20개 중 하나를 표시합니다. 기본값은 10개입니다. |
 | **글씨 크기** | Folio 내용의 글씨 크기를 80%에서 150%까지 조절합니다. |
 | **모서리** | 각진 모서리와 둥근 모서리를 전환합니다. |
@@ -173,7 +171,7 @@ Folio 자체가 SillyTavern의 **Recent Chats** 설정을 바꾸거나 기본 �
 
 ## 💾 저장과 데이터 정리
 
-- 화면 설정, 데스크톱·모바일별 한 줄 표시 개수, 페이지당 개수, 캐릭터·채팅 정렬, 고정한 캐릭터와 채팅방, 메모는 SillyTavern의 확장 설정에 저장됩니다. 이전 초상화 크기 설정값은 롤백을 위해 보존하지만 화면 배치에는 영향을 주지 않습니다.
+- 화면 설정, 데스크톱·모바일별 가로 개수, 공통 세로 줄 수, 페이지당 채팅 개수, 캐릭터·채팅 정렬, 고정한 캐릭터와 채팅방, 메모는 SillyTavern의 확장 설정에 저장됩니다. 예전 초상화 크기와 고정 페이지당 초상화 개수 설정값은 롤백을 위해 보존하지만 현재 화면 구성에는 적용되지 않습니다.
 - 검색어, 선택한 태그 필터와 현재 페이지는 임시 화면 상태이며 저장되지 않습니다.
 - Folio는 채팅 메시지의 사본을 만들거나 별도의 채팅 내용 데이터베이스를 만들지 않습니다.
 - **세팅 데이터 정리**는 Folio에 저장된 설정, 정렬 선택, 고정과 메모를 삭제하고 기본값으로 되돌립니다. 캐릭터 카드나 채팅 파일은 삭제하지 않습니다.
