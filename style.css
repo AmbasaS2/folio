@@ -1104,6 +1104,21 @@
     padding-block: 4px 0;
 }
 
+/* Position the enabled control like the other settings, while keeping
+   the SillyTavern checkbox appearance and native tick colors. */
+.folio-settings .folio-enabled-setting {
+    display: inline-flex;
+    justify-self: start;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+}
+
+.folio-settings .folio-enabled-setting input[type="checkbox"] {
+    margin: 0;
+}
+
 .folio-setting-row {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -1138,12 +1153,6 @@
     gap: 6px;
 }
 
-.folio-setting-subtitle {
-    min-width: 0;
-    color: var(--SmartThemeQuoteColor);
-    font-size: 0.86em;
-}
-
 .folio-column-option {
     display: grid;
     min-width: 0;
@@ -1176,7 +1185,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    margin-top: 0;
+    margin-top: 10px;
     padding-block: 0 24px;
 }
 
