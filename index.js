@@ -2148,7 +2148,7 @@ function renderChatRows(container, character, chats) {
                     compact: true,
                     items: [
                         {
-                            label: pinned ? tr('card.unpin') : tr('card.pin'),
+                            label: pinned ? tr('chat.unpin') : tr('chat.pin'),
                             role: 'menuitem',
                             action: () => togglePinnedChat(avatar, chat.fileId),
                         },
