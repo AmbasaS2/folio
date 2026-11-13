@@ -2142,6 +2142,8 @@ function renderChatRows(container, character, chats) {
     let searchWrap = container.querySelector('.folio-chat-search-wrap');
     if (!searchWrap) {
         searchWrap = createElement('div', 'folio-chat-search-wrap');
+        const searchIcon = createElement('i', 'folio-chat-search-icon fa-solid fa-magnifying-glass');
+        searchIcon.setAttribute('aria-hidden', 'true');
         const search = createElement('input', 'folio-chat-search text_pole');
         search.type = 'search';
         search.placeholder = tr('search.chats');
@@ -2154,7 +2156,7 @@ function renderChatRows(container, character, chats) {
             const state = activeChatState;
             if (state?.body === container) renderChatRows(container, state.character, state.chats);
         });
-        searchWrap.appendChild(search);
+        searchWrap.append(searchIcon, search);
     }
 
     const content = createElement('div', 'folio-chat-content');
