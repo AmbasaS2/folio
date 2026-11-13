@@ -77,9 +77,9 @@
   "folio.settings.ratio": "肖像比例",
   "folio.settings.ratioPortrait": "直式（2:3）",
   "folio.settings.ratioSquare": "正方形（1:1）",
-  "folio.settings.columns": "每列顯示數量",
-  "folio.settings.desktop": "桌面版",
-  "folio.settings.mobile": "行動裝置",
+  "folio.settings.columns": "肖像顯示設定",
+  "folio.settings.desktop": "橫向（🖥️）",
+  "folio.settings.mobile": "橫向（📱）",
   "folio.unit.count": "{0} 個",
   "folio.settings.characterPage": "每頁肖像數量",
   "folio.settings.chatPage": "每頁聊天數量",
@@ -87,5 +87,8 @@
   "folio.settings.corner": "圓角樣式",
   "folio.settings.cornerSharp": "直角",
   "folio.settings.cornerRound": "圓角",
-  "folio.settings.clean": "清理儲存資料"
+  "folio.settings.clean": "清理儲存資料",
+  "folio.settings.exposureCount": "顯示數量",
+  "folio.settings.rows": "縱向列數",
+  "folio.unit.rows": "{0} 列"
 }
