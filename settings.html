@@ -27,25 +27,44 @@
                     </select>
                 </label>
 
-                <div class="folio-setting-row folio-range-setting">
-                    <div class="folio-range-title">
-                        <label class="folio-setting-label" for="folio-portrait-scale">초상화 크기</label>
-                        <output id="folio-portrait-scale-value" class="folio-setting-value" for="folio-portrait-scale">100%</output>
+                <div class="folio-setting-row folio-column-setting" role="group" aria-labelledby="folio-columns-label">
+                    <span class="folio-setting-label" id="folio-columns-label">한 줄에 표시할 개수</span>
+                    <div class="folio-column-options">
+                        <label class="folio-column-option" for="folio-desktop-columns">
+                            <span>데스크톱</span>
+                            <select id="folio-desktop-columns" class="text_pole">
+                            <option value="2">2개</option>
+                            <option value="3" selected>3개</option>
+                            <option value="4">4개</option>
+                            <option value="5">5개</option>
+                            <option value="6">6개</option>
+                            <option value="7">7개</option>
+                            </select>
+                        </label>
+                        <label class="folio-column-option" for="folio-mobile-columns">
+                            <span>모바일 기기</span>
+                            <select id="folio-mobile-columns" class="text_pole">
+                            <option value="1">1개</option>
+                            <option value="2">2개</option>
+                            <option value="3" selected>3개</option>
+                            <option value="4">4개</option>
+                            <option value="5">5개</option>
+                            </select>
+                        </label>
                     </div>
-                    <input id="folio-portrait-scale" class="neo-range-slider folio-setting-slider" type="range" min="50" max="120" step="10" value="100">
                 </div>
 
                 <div class="folio-setting-row folio-range-setting">
                     <div class="folio-range-title">
-                        <label class="folio-setting-label" for="folio-character-page-size">캐릭터 페이지당 개수</label>
-                        <output id="folio-character-page-size-value" class="folio-setting-value" for="folio-character-page-size">12명</output>
+                        <label class="folio-setting-label" for="folio-character-page-size">페이지당 초상화 개수</label>
+                        <output id="folio-character-page-size-value" class="folio-setting-value" for="folio-character-page-size">12개</output>
                     </div>
                     <input id="folio-character-page-size" class="neo-range-slider folio-setting-slider" type="range" min="0" max="7" step="1" value="5">
                 </div>
 
                 <div class="folio-setting-row folio-range-setting">
                     <div class="folio-range-title">
-                        <label class="folio-setting-label" for="folio-chat-page-size">채팅 페이지당 개수</label>
+                        <label class="folio-setting-label" for="folio-chat-page-size">페이지당 채팅 개수</label>
                         <output id="folio-chat-page-size-value" class="folio-setting-value" for="folio-chat-page-size">10개</output>
                     </div>
                     <input id="folio-chat-page-size" class="neo-range-slider folio-setting-slider" type="range" min="5" max="20" step="5" value="10">
