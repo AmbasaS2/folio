@@ -5,18 +5,23 @@
 It adds a visual character shelf to the SillyTavern welcome screen, where you can find a character first and then open, create, rename, or delete that character's chats. SillyTavern's native welcome shortcuts remain available below the shelf.
 
 
-## 📸 Preview
+## 📸 Preview / 미리보기
 
 <p align="center">
-  <img src="assets/readme/folio-desktop.png" alt="Folio character shelf on desktop" width="480" />
-  <img src="assets/readme/folio-mobile.jpeg" alt="Folio character shelf on mobile" width="225" />
+  <a href="assets/readme/folio-preview.png"><img src="assets/readme/folio-preview.png" alt="Folio desktop and mobile character shelf previews / 폴리오 PC와 모바일 캐릭터 선반" width="900" /></a>
 </p>
 
-<p align="center">
-  <img src="assets/readme/folio-chat-drawer.png" alt="Folio character chat drawer with chat management controls" width="360" />
-</p>
+*The preview uses cropped screenshots for a consistent layout. Open the original images below to see the full interface; labels may vary by version.*  
+*미리보기는 크기를 맞추기 위해 화면 일부만 보여줍니다. 전체 화면은 아래 원본 이미지에서 확인할 수 있으며, 버전에 따라 문구가 다를 수 있습니다.*
 
-*Screenshots show example data with a Korean-language UI; the layout and labels may differ by version and language.*
+<details>
+<summary>Full-size screenshots / 원본 화면 보기</summary>
+
+- [Desktop character shelf / PC 캐릭터 선반](assets/readme/folio-desktop.png)
+- [Mobile character shelf / 모바일 캐릭터 선반](assets/readme/folio-mobile.jpeg)
+- [Chat drawer / 채팅 서랍](assets/readme/folio-chat-drawer.png)
+
+</details>
 
 ## 📥 Installation
 
@@ -115,19 +120,6 @@ Opening a selected chat is handed back to SillyTavern's normal chat-opening flow
 
 SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 찾고 그 캐릭터의 채팅을 열거나 새로 만들고 이름을 바꾸거나 삭제할 수 있습니다. SillyTavern의 기존 시작 화면 단축 버튼도 선반 아래에 그대로 표시됩니다.
 
-
-## 📸 미리보기
-
-<p align="center">
-  <img src="assets/readme/folio-desktop.png" alt="PC에서 보는 폴리오 캐릭터 선반" width="480" />
-  <img src="assets/readme/folio-mobile.jpeg" alt="모바일에서 보는 폴리오 캐릭터 선반" width="225" />
-</p>
-
-<p align="center">
-  <img src="assets/readme/folio-chat-drawer.png" alt="캐릭터 채팅 서랍과 채팅 관리 메뉴" width="360" />
-</p>
-
-*예시 화면이므로 버전이나 언어 설정에 따라 실제 배치와 문구가 다를 수 있습니다.*
 
 ## 📥 설치 방법
 
