@@ -5,32 +5,37 @@
 It adds a visual character shelf to the SillyTavern welcome screen, where you can find a character first and then open, create, rename, or delete that character's chats. SillyTavern's native welcome shortcuts remain available below the shelf.
 
 
-## 📸 Preview / 미리보기
+## 📸 Preview
 
 <p align="center">
-  <a href="assets/readme/folio-preview.png"><img src="assets/readme/folio-preview.png" alt="Folio desktop and mobile character shelf previews / 폴리오 PC와 모바일 캐릭터 선반" width="900" /></a>
+  <a href="assets/readme/folio-preview.png"><img src="assets/readme/folio-preview.png" alt="Folio desktop and mobile character shelf preview" width="900" /></a>
 </p>
 
-*The preview uses cropped screenshots for a consistent layout. Open the original images below to see the full interface; labels may vary by version.*  
-*미리보기는 크기를 맞추기 위해 화면 일부만 보여줍니다. 전체 화면은 아래 원본 이미지에서 확인할 수 있으며, 버전에 따라 문구가 다를 수 있습니다.*
+*The preview shows cropped screenshots of the desktop and mobile shelf. Open the original images below for full detail; the interface may vary by version.*
 
 <details>
-<summary>Full-size screenshots / 원본 화면 보기</summary>
+<summary>Full-size screenshots</summary>
 
-- [Desktop character shelf / PC 캐릭터 선반](assets/readme/folio-desktop.png)
-- [Mobile character shelf / 모바일 캐릭터 선반](assets/readme/folio-mobile.jpeg)
-- [Chat drawer / 채팅 서랍](assets/readme/folio-chat-drawer.png)
+- [Desktop character shelf](assets/readme/folio-desktop.png)
+- [Mobile character shelf](assets/readme/folio-mobile.jpeg)
+- [Chat drawer](assets/readme/folio-chat-drawer.png)
 
 </details>
 
 ## 📥 Installation
 
 1. Open **Extensions → Install extension** in SillyTavern (the option may appear under extension management).
-2. Paste \`https://github.com/AmbasaS2/folio\` and install.
+2. Paste `https://github.com/AmbasaS2/folio` and install.
 3. Reload SillyTavern, then open the welcome screen to use the Folio character shelf.
 
 
 ## 🧭 How it works
+
+<p align="center">
+  <a href="assets/readme/folio-workflow-guide.png"><img src="assets/readme/folio-workflow-guide.png" alt="Folio process: welcome shelf, character search, chat drawer, existing or new chat" width="860" /></a>
+</p>
+
+*Illustrated workflow; this is not a live screenshot.*
 
 **Open the welcome screen → find a character → click the portrait or name → choose an existing chat or start a new one**
 
@@ -121,14 +126,37 @@ Opening a selected chat is handed back to SillyTavern's normal chat-opening flow
 SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 찾고 그 캐릭터의 채팅을 열거나 새로 만들고 이름을 바꾸거나 삭제할 수 있습니다. SillyTavern의 기존 시작 화면 단축 버튼도 선반 아래에 그대로 표시됩니다.
 
 
+## 📸 미리보기
+
+<p align="center">
+  <a href="assets/readme/folio-preview.png"><img src="assets/readme/folio-preview.png" alt="폴리오 PC·모바일 캐릭터 선반 미리보기" width="900" /></a>
+</p>
+
+*PC·모바일 화면을 일부 잘라 크기를 맞춘 미리보기입니다. 전체 화면은 아래 원본 사진에서 볼 수 있으며, 버전에 따라 배치가 다를 수 있습니다.*
+
+<details>
+<summary>원본 화면 보기</summary>
+
+- [PC 캐릭터 선반](assets/readme/folio-desktop.png)
+- [모바일 캐릭터 선반](assets/readme/folio-mobile.jpeg)
+- [채팅 서랍](assets/readme/folio-chat-drawer.png)
+
+</details>
+
 ## 📥 설치 방법
 
 1. SillyTavern의 **확장 프로그램 → 확장 설치** 메뉴를 엽니다. 버전에 따라 확장 관리 메뉴 안에 있을 수 있습니다.
-2. \`https://github.com/AmbasaS2/folio\`를 붙여넣고 설치합니다.
+2. `https://github.com/AmbasaS2/folio`를 붙여넣고 설치합니다.
 3. SillyTavern을 새로고침한 뒤 시작 화면에서 폴리오 캐릭터 선반을 사용합니다.
 
 
 ## 🧭 사용 순서
+
+<p align="center">
+  <a href="assets/readme/folio-workflow-guide.png"><img src="assets/readme/folio-workflow-guide.png" alt="폴리오 사용 흐름: 캐릭터 선반, 찾기, 채팅 서랍, 기존 채팅 또는 새 채팅" width="860" /></a>
+</p>
+
+*실제 화면 캡처가 아닌 기능 안내용 구성도입니다.*
 
 **시작 화면 열기 → 캐릭터 찾기 → 초상화나 이름 누르기 → 기존 채팅을 열거나 새 대화 시작하기**
 
