@@ -45,6 +45,12 @@ The welcome shelf is built from the character list SillyTavern has already loade
 
 Each character card shows the portrait, name, assigned SillyTavern tags, and an optional personal note.
 
+<p align="center">
+  <a href="assets/readme/folio-shelf-controls-guide.png"><img src="assets/readme/folio-shelf-controls-guide.png" alt="Annotated actual character shelf highlighting sorting, search, tag filter, pin, open chat drawer, and notes" width="860" /></a>
+</p>
+
+*Annotated real screenshot. Labels explain the current controls; colors and arrangement can vary with the SillyTavern theme.*
+
 | Control or action | What it does |
 |---|---|
 | **Search** | Finds characters by name. Partial matches are supported. |
@@ -63,6 +69,12 @@ Portraits are loaded as they approach the visible area. If a portrait cannot be 
 
 Clicking a character opens a drawer containing that character's saved chat filenames.
 
+<p align="center">
+  <a href="assets/readme/folio-chat-drawer-guide.png"><img src="assets/readme/folio-chat-drawer-guide.png" alt="Folio chat drawer screenshot with guidance for chat searching, pinning, renaming, deleting, and starting chats" width="860" /></a>
+</p>
+
+*The screenshot is from an earlier version. The actions described beside it are based on the current extension.*
+
 | Control or action | What it does |
 |---|---|
 | **Character name / sort menu** | Sorts chat titles ascending or descending, with pinned chats always at the top. |
@@ -78,6 +90,12 @@ Renaming requires a non-empty name and will not overwrite another chat with the 
 ## ⚙️ Extension settings
 
 Configure Folio under **Extensions → Folio**.
+
+<p align="center">
+  <a href="assets/readme/folio-layout-settings-guide.png"><img src="assets/readme/folio-layout-settings-guide.png" alt="Folio layout settings showing desktop and mobile grid, row and column counts, portrait ratio and visual options" width="860" /></a>
+</p>
+
+*This diagram illustrates adjustable layouts, not a live settings screenshot. Both desktop and mobile default to 3 columns × 4 rows (12 portraits).* 
 
 | Setting | Options and behavior |
 |---|---|
@@ -166,6 +184,12 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 
 각 캐릭터 카드에는 초상화, 이름, SillyTavern에 지정된 태그와 선택적으로 작성한 개인 메모가 표시됩니다.
 
+<p align="center">
+  <a href="assets/readme/folio-shelf-controls-guide.png"><img src="assets/readme/folio-shelf-controls-guide.png" alt="실제 캐릭터 선반에 정렬·검색·태그·고정·채팅 서랍·메모 위치를 표시한 안내 이미지" width="860" /></a>
+</p>
+
+*실제 선반 화면에 조작 위치를 표시한 이미지입니다. 색상과 배치는 SillyTavern 테마에 따라 달라질 수 있습니다.*
+
 | 조작 | 기능 |
 |---|---|
 | **검색** | 캐릭터 이름으로 찾습니다. 이름 일부만 입력해도 검색됩니다. |
@@ -184,6 +208,12 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 
 캐릭터를 누르면 그 캐릭터에게 저장된 채팅 파일명이 서랍에 표시됩니다.
 
+<p align="center">
+  <a href="assets/readme/folio-chat-drawer-guide.png"><img src="assets/readme/folio-chat-drawer-guide.png" alt="실제 폴리오 채팅 서랍과 저장된 채팅 검색·고정·이름 바꾸기·삭제·새 대화 시작 안내" width="860" /></a>
+</p>
+
+*예전 버전의 실제 채팅 서랍 화면을 사용했으며, 옆의 기능 설명은 현재 확장 기준입니다.*
+
 | 조작 | 기능 |
 |---|---|
 | **캐릭터 이름 / 정렬 메뉴** | 채팅 제목을 오름차순 또는 내림차순으로 정렬하고, 고정한 채팅방은 맨 위에 표시합니다. |
@@ -199,6 +229,12 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 ## ⚙️ 확장 설정
 
 **Extensions → Folio**에서 설정합니다.
+
+<p align="center">
+  <a href="assets/readme/folio-layout-settings-guide.png"><img src="assets/readme/folio-layout-settings-guide.png" alt="폴리오 PC·모바일 가로 수, 세로 줄 수, 초상화 비율, 글씨 크기와 모서리 설정 안내" width="860" /></a>
+</p>
+
+*설정값을 보여주는 구성도이며 실제 설정 화면 캡처는 아닙니다. PC와 모바일의 기본값은 각각 3열 × 4줄, 12개입니다.*
 
 | 설정 | 선택 항목과 기능 |
 |---|---|
