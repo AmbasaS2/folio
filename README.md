@@ -8,7 +8,7 @@ It adds a visual character shelf to the SillyTavern welcome screen, where you ca
 ## 📸 Preview
 
 <p align="center">
-  <a href="assets/readme/folio-preview.png"><img src="assets/readme/folio-preview.png" alt="Folio desktop and mobile character shelf preview" width="900" /></a>
+  <a href="assets/readme/mobile/folio-preview-mobile.webp"><img src="assets/readme/mobile/folio-preview-mobile.webp" alt="Folio desktop and mobile character shelf preview" width="900" /></a>
 </p>
 
 *The preview shows cropped screenshots of the desktop and mobile shelf. Open the original images below for full detail; the interface may vary by version.*
@@ -32,7 +32,7 @@ It adds a visual character shelf to the SillyTavern welcome screen, where you ca
 ## 🧭 How it works
 
 <p align="center">
-  <a href="assets/readme/folio-workflow-guide.png"><img src="assets/readme/folio-workflow-guide.png" alt="Folio process: welcome shelf, character search, chat drawer, existing or new chat" width="860" /></a>
+  <a href="assets/readme/mobile/folio-workflow-guide-mobile.webp"><img src="assets/readme/mobile/folio-workflow-guide-mobile.webp" alt="Folio process: welcome shelf, character search, chat drawer, existing or new chat" width="860" /></a>
 </p>
 
 *Illustrated workflow; this is not a live screenshot.*
@@ -46,7 +46,7 @@ The welcome shelf is built from the character list SillyTavern has already loade
 Each character card shows the portrait, name, assigned SillyTavern tags, and an optional personal note.
 
 <p align="center">
-  <a href="assets/readme/folio-shelf-controls-guide.png"><img src="assets/readme/folio-shelf-controls-guide.png" alt="Annotated actual character shelf highlighting sorting, search, tag filter, pin, open chat drawer, and notes" width="860" /></a>
+  <a href="assets/readme/mobile/folio-shelf-controls-guide-mobile.webp"><img src="assets/readme/mobile/folio-shelf-controls-guide-mobile.webp" alt="Annotated actual character shelf highlighting sorting, search, tag filter, pin, open chat drawer, and notes" width="860" /></a>
 </p>
 
 *Annotated real screenshot. Labels explain the current controls; colors and arrangement can vary with the SillyTavern theme.*
@@ -70,7 +70,7 @@ Portraits are loaded as they approach the visible area. If a portrait cannot be 
 Clicking a character opens a drawer containing that character's saved chat filenames.
 
 <p align="center">
-  <a href="assets/readme/folio-chat-drawer-guide.png"><img src="assets/readme/folio-chat-drawer-guide.png" alt="Folio chat drawer screenshot with guidance for chat searching, pinning, renaming, deleting, and starting chats" width="860" /></a>
+  <a href="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp"><img src="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp" alt="Folio chat drawer screenshot with guidance for chat searching, pinning, renaming, deleting, and starting chats" width="860" /></a>
 </p>
 
 *The screenshot is from an earlier version. The actions described beside it are based on the current extension.*
@@ -92,7 +92,7 @@ Renaming requires a non-empty name and will not overwrite another chat with the 
 Configure Folio under **Extensions → Folio**.
 
 <p align="center">
-  <a href="assets/readme/folio-layout-settings-guide.png"><img src="assets/readme/folio-layout-settings-guide.png" alt="Folio layout settings showing desktop and mobile grid, row and column counts, portrait ratio and visual options" width="860" /></a>
+  <a href="assets/readme/mobile/folio-layout-settings-guide-mobile.webp"><img src="assets/readme/mobile/folio-layout-settings-guide-mobile.webp" alt="Folio layout settings showing desktop and mobile grid, row and column counts, portrait ratio and visual options" width="860" /></a>
 </p>
 
 *This diagram illustrates adjustable layouts, not a live settings screenshot. Both desktop and mobile default to 3 columns × 4 rows (12 portraits).* 
@@ -147,7 +147,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 ## 📸 미리보기
 
 <p align="center">
-  <a href="assets/readme/folio-preview.png"><img src="assets/readme/folio-preview.png" alt="폴리오 PC·모바일 캐릭터 선반 미리보기" width="900" /></a>
+  <a href="assets/readme/mobile/folio-preview-mobile.webp"><img src="assets/readme/mobile/folio-preview-mobile.webp" alt="폴리오 PC·모바일 캐릭터 선반 미리보기" width="900" /></a>
 </p>
 
 *PC·모바일 화면을 일부 잘라 크기를 맞춘 미리보기입니다. 전체 화면은 아래 원본 사진에서 볼 수 있으며, 버전에 따라 배치가 다를 수 있습니다.*
@@ -171,7 +171,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 ## 🧭 사용 순서
 
 <p align="center">
-  <a href="assets/readme/folio-workflow-guide.png"><img src="assets/readme/folio-workflow-guide.png" alt="폴리오 사용 흐름: 캐릭터 선반, 찾기, 채팅 서랍, 기존 채팅 또는 새 채팅" width="860" /></a>
+  <a href="assets/readme/mobile/folio-workflow-guide-mobile.webp"><img src="assets/readme/mobile/folio-workflow-guide-mobile.webp" alt="폴리오 사용 흐름: 캐릭터 선반, 찾기, 채팅 서랍, 기존 채팅 또는 새 채팅" width="860" /></a>
 </p>
 
 *실제 화면 캡처가 아닌 기능 안내용 구성도입니다.*
@@ -185,7 +185,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 각 캐릭터 카드에는 초상화, 이름, SillyTavern에 지정된 태그와 선택적으로 작성한 개인 메모가 표시됩니다.
 
 <p align="center">
-  <a href="assets/readme/folio-shelf-controls-guide.png"><img src="assets/readme/folio-shelf-controls-guide.png" alt="실제 캐릭터 선반에 정렬·검색·태그·고정·채팅 서랍·메모 위치를 표시한 안내 이미지" width="860" /></a>
+  <a href="assets/readme/mobile/folio-shelf-controls-guide-mobile.webp"><img src="assets/readme/mobile/folio-shelf-controls-guide-mobile.webp" alt="실제 캐릭터 선반에 정렬·검색·태그·고정·채팅 서랍·메모 위치를 표시한 안내 이미지" width="860" /></a>
 </p>
 
 *실제 선반 화면에 조작 위치를 표시한 이미지입니다. 색상과 배치는 SillyTavern 테마에 따라 달라질 수 있습니다.*
@@ -209,7 +209,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 캐릭터를 누르면 그 캐릭터에게 저장된 채팅 파일명이 서랍에 표시됩니다.
 
 <p align="center">
-  <a href="assets/readme/folio-chat-drawer-guide.png"><img src="assets/readme/folio-chat-drawer-guide.png" alt="실제 폴리오 채팅 서랍과 저장된 채팅 검색·고정·이름 바꾸기·삭제·새 대화 시작 안내" width="860" /></a>
+  <a href="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp"><img src="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp" alt="실제 폴리오 채팅 서랍과 저장된 채팅 검색·고정·이름 바꾸기·삭제·새 대화 시작 안내" width="860" /></a>
 </p>
 
 *예전 버전의 실제 채팅 서랍 화면을 사용했으며, 옆의 기능 설명은 현재 확장 기준입니다.*
@@ -231,7 +231,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 **Extensions → Folio**에서 설정합니다.
 
 <p align="center">
-  <a href="assets/readme/folio-layout-settings-guide.png"><img src="assets/readme/folio-layout-settings-guide.png" alt="폴리오 PC·모바일 가로 수, 세로 줄 수, 초상화 비율, 글씨 크기와 모서리 설정 안내" width="860" /></a>
+  <a href="assets/readme/mobile/folio-layout-settings-guide-mobile.webp"><img src="assets/readme/mobile/folio-layout-settings-guide-mobile.webp" alt="폴리오 PC·모바일 가로 수, 세로 줄 수, 초상화 비율, 글씨 크기와 모서리 설정 안내" width="860" /></a>
 </p>
 
 *설정값을 보여주는 구성도이며 실제 설정 화면 캡처는 아닙니다. PC와 모바일의 기본값은 각각 3열 × 4줄, 12개입니다.*
