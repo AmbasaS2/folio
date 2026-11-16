@@ -4,6 +4,27 @@
 
 It adds a visual character shelf to the SillyTavern welcome screen, where you can find a character first and then open, create, rename, or delete that character's chats. SillyTavern's native welcome shortcuts remain available below the shelf.
 
+
+## 📸 Preview
+
+<p align="center">
+  <img src="assets/readme/folio-desktop.png" alt="Folio character shelf on desktop" width="480" />
+  <img src="assets/readme/folio-mobile.jpeg" alt="Folio character shelf on mobile" width="225" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/folio-chat-drawer.png" alt="Folio character chat drawer with chat management controls" width="360" />
+</p>
+
+*Screenshots show example data with a Korean-language UI; the layout and labels may differ by version and language.*
+
+## 📥 Installation
+
+1. Open **Extensions → Install extension** in SillyTavern (the option may appear under extension management).
+2. Paste \`https://github.com/AmbasaS2/folio\` and install.
+3. Reload SillyTavern, then open the welcome screen to use the Folio character shelf.
+
+
 ## 🧭 How it works
 
 **Open the welcome screen → find a character → click the portrait or name → choose an existing chat or start a new one**
@@ -93,6 +114,27 @@ Opening a selected chat is handed back to SillyTavern's normal chat-opening flow
 **Folio는 기존 SillyTavern 채팅을 캐릭터부터 골라 가볍게 열 수 있는 확장입니다.**
 
 SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 찾고 그 캐릭터의 채팅을 열거나 새로 만들고 이름을 바꾸거나 삭제할 수 있습니다. SillyTavern의 기존 시작 화면 단축 버튼도 선반 아래에 그대로 표시됩니다.
+
+
+## 📸 미리보기
+
+<p align="center">
+  <img src="assets/readme/folio-desktop.png" alt="PC에서 보는 폴리오 캐릭터 선반" width="480" />
+  <img src="assets/readme/folio-mobile.jpeg" alt="모바일에서 보는 폴리오 캐릭터 선반" width="225" />
+</p>
+
+<p align="center">
+  <img src="assets/readme/folio-chat-drawer.png" alt="캐릭터 채팅 서랍과 채팅 관리 메뉴" width="360" />
+</p>
+
+*예시 화면이므로 버전이나 언어 설정에 따라 실제 배치와 문구가 다를 수 있습니다.*
+
+## 📥 설치 방법
+
+1. SillyTavern의 **확장 프로그램 → 확장 설치** 메뉴를 엽니다. 버전에 따라 확장 관리 메뉴 안에 있을 수 있습니다.
+2. \`https://github.com/AmbasaS2/folio\`를 붙여넣고 설치합니다.
+3. SillyTavern을 새로고침한 뒤 시작 화면에서 폴리오 캐릭터 선반을 사용합니다.
+
 
 ## 🧭 사용 순서
 
