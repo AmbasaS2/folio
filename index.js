@@ -1264,43 +1264,51 @@ function layoutCardTagOverflow(card) {
         return true;
     }
 
+    // Find the maximum count that leaves the overflow badge in the first two
+    // lines. The previous implementation hid one badge at a time and rescanned
+    // every visible tag's layout. With many tags that caused quadratic reads.
+    // Binary search retains the existing line-fit criterion with fewer probes.
+    let appliedCount = visibleCount;
+    let left = 0;
+    let right = visibleCount;
+    let best = 0;
     for (let index = visibleCount; index < badges.length; index += 1) badges[index].hidden = true;
     overflowBadge.hidden = false;
 
-    while (true) {
-        const hiddenBadges = badges.slice(visibleCount);
-        const hiddenNames = hiddenBadges.map(badge => badge.textContent || '').filter(Boolean);
-        overflowBadge.textContent = `+${hiddenBadges.length}`;
-        overflowBadge.title = hiddenNames.join(', ');
-        overflowBadge.setAttribute('aria-label', tr('card.hiddenTags', hiddenBadges.length, hiddenNames.join(', ')));
-
-        if (getTagFlowLineIndex(meta, overflowBadge) < 2 || visibleCount === 0) break;
-        visibleCount -= 1;
-        badges[visibleCount].hidden = true;
+    const applyCount = count => {
+        for (let index = Math.min(appliedCount, count); index < Math.max(appliedCount, count); index += 1) {
+            badges[index].hidden = index >= count;
+        }
+        appliedCount = count;
+        overflowBadge.textContent = '+' + (badges.length - count);
+    };
+    while (left <= right) {
+        const candidate = Math.floor((left + right) / 2);
+        applyCount(candidate);
+        const fits = candidate === 0 || getTagFlowLineIndex(meta, overflowBadge) < 2;
+        if (fits) {
+            best = candidate;
+            left = candidate + 1;
+        } else {
+            right = candidate - 1;
+        }
     }
-
+    visibleCount = best;
+    applyCount(visibleCount);
+    const hiddenNames = badges.slice(visibleCount).map(badge => badge.textContent || '').filter(Boolean);
+    overflowBadge.title = hiddenNames.join(', ');
+    overflowBadge.setAttribute('aria-label', tr('card.hiddenTags', badges.length - visibleCount, hiddenNames.join(', ')));
     card.dataset.hiddenTagCount = String(badges.length - visibleCount);
     return true;
 }
 
-// Tag overflow performs several layout reads after changing hidden badges.
-// Keep that work below one short frame even when a page contains many cards.
-const FOLIO_TAG_LAYOUT_FRAME_BUDGET_MS = 6;
-const FOLIO_TAG_LAYOUT_CARDS_PER_FRAME = 4;
-
-function runCardTagLayout(expectedRoot = rootElement, cards = null, startIndex = 0) {
-    if (!expectedRoot?.isConnected || rootElement !== expectedRoot) return startIndex;
-    const visibleCards = cards || Array.from(expectedRoot.querySelectorAll('.folio-card[data-has-tags="true"]'));
-    const startedAt = globalThis.performance?.now?.() ?? Date.now();
-    let index = startIndex;
-    let processed = 0;
-    while (index < visibleCards.length && processed < FOLIO_TAG_LAYOUT_CARDS_PER_FRAME) {
-        if (processed > 0 && (globalThis.performance?.now?.() ?? Date.now()) - startedAt >= FOLIO_TAG_LAYOUT_FRAME_BUDGET_MS) break;
-        const card = visibleCards[index++];
-        if (card?.isConnected && expectedRoot.contains(card)) layoutCardTagOverflow(card);
-        processed += 1;
+// Run a single animation frame again so tags don't visibly trickle in over
+// several seconds after the card grid first appears.
+function runCardTagLayout(expectedRoot = rootElement) {
+    if (!expectedRoot?.isConnected || rootElement !== expectedRoot) return;
+    for (const card of expectedRoot.querySelectorAll('.folio-card[data-has-tags="true"]')) {
+        layoutCardTagOverflow(card);
     }
-    return index;
 }
 
 function cancelScheduledCardTagLayout() {
@@ -1314,20 +1322,14 @@ function scheduleCardTagLayout(expectedRoot = rootElement) {
     if (!(expectedRoot instanceof HTMLElement)) return;
     cancelScheduledCardTagLayout();
     const operationRevision = runtimeRevision;
-    // Snapshot this render's card nodes. A later page/filter render cancels
-    // the previous frame and schedules a new snapshot, never stale cards.
-    const cards = Array.from(expectedRoot.querySelectorAll('.folio-card[data-has-tags="true"]'));
-    let cursor = 0;
-    const scheduleFrame = typeof globalThis.requestAnimationFrame === 'function'
-        ? callback => globalThis.requestAnimationFrame(callback)
-        : callback => globalThis.setTimeout(callback, 16);
     const run = () => {
         tagLayoutFrame = null;
         if (!isRuntimeCurrent(operationRevision) || !expectedRoot.isConnected || rootElement !== expectedRoot) return;
-        cursor = runCardTagLayout(expectedRoot, cards, cursor);
-        if (cursor < cards.length) tagLayoutFrame = scheduleFrame(run);
+        runCardTagLayout(expectedRoot);
     };
-    if (cards.length) tagLayoutFrame = scheduleFrame(run);
+    tagLayoutFrame = typeof globalThis.requestAnimationFrame === 'function'
+        ? globalThis.requestAnimationFrame(run)
+        : globalThis.setTimeout(run, 0);
 }
 
 function disconnectTagLayoutObserver() {
