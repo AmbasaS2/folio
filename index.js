@@ -1283,11 +1283,24 @@ function layoutCardTagOverflow(card) {
     return true;
 }
 
-function runCardTagLayout(expectedRoot = rootElement) {
-    if (!expectedRoot?.isConnected || rootElement !== expectedRoot) return;
-    for (const card of expectedRoot.querySelectorAll('.folio-card[data-has-tags="true"]')) {
-        layoutCardTagOverflow(card);
+// Tag overflow performs several layout reads after changing hidden badges.
+// Keep that work below one short frame even when a page contains many cards.
+const FOLIO_TAG_LAYOUT_FRAME_BUDGET_MS = 6;
+const FOLIO_TAG_LAYOUT_CARDS_PER_FRAME = 4;
+
+function runCardTagLayout(expectedRoot = rootElement, cards = null, startIndex = 0) {
+    if (!expectedRoot?.isConnected || rootElement !== expectedRoot) return startIndex;
+    const visibleCards = cards || Array.from(expectedRoot.querySelectorAll('.folio-card[data-has-tags="true"]'));
+    const startedAt = globalThis.performance?.now?.() ?? Date.now();
+    let index = startIndex;
+    let processed = 0;
+    while (index < visibleCards.length && processed < FOLIO_TAG_LAYOUT_CARDS_PER_FRAME) {
+        if (processed > 0 && (globalThis.performance?.now?.() ?? Date.now()) - startedAt >= FOLIO_TAG_LAYOUT_FRAME_BUDGET_MS) break;
+        const card = visibleCards[index++];
+        if (card?.isConnected && expectedRoot.contains(card)) layoutCardTagOverflow(card);
+        processed += 1;
     }
+    return index;
 }
 
 function cancelScheduledCardTagLayout() {
@@ -1301,14 +1314,20 @@ function scheduleCardTagLayout(expectedRoot = rootElement) {
     if (!(expectedRoot instanceof HTMLElement)) return;
     cancelScheduledCardTagLayout();
     const operationRevision = runtimeRevision;
+    // Snapshot this render's card nodes. A later page/filter render cancels
+    // the previous frame and schedules a new snapshot, never stale cards.
+    const cards = Array.from(expectedRoot.querySelectorAll('.folio-card[data-has-tags="true"]'));
+    let cursor = 0;
+    const scheduleFrame = typeof globalThis.requestAnimationFrame === 'function'
+        ? callback => globalThis.requestAnimationFrame(callback)
+        : callback => globalThis.setTimeout(callback, 16);
     const run = () => {
         tagLayoutFrame = null;
-        if (!isRuntimeCurrent(operationRevision)) return;
-        runCardTagLayout(expectedRoot);
+        if (!isRuntimeCurrent(operationRevision) || !expectedRoot.isConnected || rootElement !== expectedRoot) return;
+        cursor = runCardTagLayout(expectedRoot, cards, cursor);
+        if (cursor < cards.length) tagLayoutFrame = scheduleFrame(run);
     };
-    tagLayoutFrame = typeof globalThis.requestAnimationFrame === 'function'
-        ? globalThis.requestAnimationFrame(run)
-        : globalThis.setTimeout(run, 0);
+    if (cards.length) tagLayoutFrame = scheduleFrame(run);
 }
 
 function disconnectTagLayoutObserver() {
