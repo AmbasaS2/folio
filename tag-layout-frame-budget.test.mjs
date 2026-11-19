@@ -6,114 +6,152 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const source = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'index.js'), 'utf8');
-const start = source.indexOf('const FOLIO_TAG_LAYOUT_FRAME_BUDGET_MS = 6;');
-const end = source.indexOf('function disconnectTagLayoutObserver() {', start);
-assert.ok(start >= 0 && end > start, 'Tag layout scheduler not found');
-const schedulerSource = source.slice(start, end);
+function section(start, end) {
+  const a = source.indexOf(start);
+  const b = source.indexOf(end, a);
+  assert.ok(a >= 0 && b > a, 'missing source: ' + start);
+  return source.slice(a, b);
+}
+const tagCode = section('function getTagFlowLineMap(meta) {', '// Run a single animation frame again');
+const frameCode = section('function runCardTagLayout(expectedRoot = rootElement) {', 'function disconnectTagLayoutObserver() {');
 
-function fixture(count = 11, costPerCard = 0) {
-    class HTMLElement {}
-    const cards = Array.from({ length: count }, (_, i) => Object.assign(new HTMLElement(), { id: i, isConnected: true }));
-    const root = Object.assign(new HTMLElement(), {
-        isConnected: true,
-        querySelectorAll(selector) {
-            assert.equal(selector, '.folio-card[data-has-tags="true"]');
-            return cards;
-        },
-        contains(element) { return cards.includes(element); },
-    });
-    const frames = new Map();
-    const processed = [];
-    let nextFrame = 0;
-    let elapsed = 0;
-    const sandbox = {
-        HTMLElement,
-        rootElement: root,
-        runtimeRevision: 1,
-        isRuntimeCurrent(revision) { return revision === this.runtimeRevision; },
-        tagLayoutFrame: null,
-        layoutCardTagOverflow(card) { processed.push(card.id); elapsed += costPerCard; },
-        performance: { now: () => elapsed },
-        requestAnimationFrame(callback) { const id = ++nextFrame; frames.set(id, callback); return id; },
-        cancelAnimationFrame(id) { frames.delete(id); },
-        setTimeout(callback) { const id = ++nextFrame; frames.set(id, callback); return id; },
-        clearTimeout(id) { frames.delete(id); },
-    };
-    // Avoid depending on caller binding of a context method.
-    sandbox.isRuntimeCurrent = revision => revision === sandbox.runtimeRevision;
-    vm.createContext(sandbox);
-    vm.runInContext(schedulerSource + '\nglobalThis.folioTestApi = { scheduleCardTagLayout, cancelScheduledCardTagLayout };', sandbox);
-    const step = () => {
-        const [id, callback] = frames.entries().next().value || [];
-        if (callback) { frames.delete(id); callback(); }
-    };
-    const flush = () => {
-        let iterations = 0;
-        while (frames.size) { assert.ok(++iterations < 30, 'Runaway animation frames'); step(); }
-    };
-    return { sandbox, cards, root, frames, processed, step, flush };
+function buildMock(width, tagWidths) {
+  class HTMLElement {
+    constructor() { this.hidden = false; this.textContent = ''; this.dataset = {}; this.attributes = {}; }
+    setAttribute(key, value) { this.attributes[key] = String(value); }
+    removeAttribute(key) { delete this.attributes[key]; }
+  }
+  const name = new HTMLElement(); name.width = 4;
+  const tags = tagWidths.map((tagWidth, idx) => {
+    const tag = new HTMLElement(); tag.width = tagWidth; tag.textContent = 'tag' + idx;
+    return tag;
+  });
+  const overflow = new HTMLElement(); overflow.isOverflow = true;
+  const meta = new HTMLElement();
+  const card = new HTMLElement(); card.isConnected = true;
+  const tagList = new HTMLElement();
+
+  function visible() {
+    return [name, ...tags, overflow].filter(el => !el.hidden);
+  }
+  function boxFor(target) {
+    let x = 0, line = 0;
+    for (const el of visible()) {
+      const w = el.isOverflow ? Math.max(2, String(el.textContent).length + 1) : el.width;
+      if (x > 0 && x + w > width) { x = 0; line += 1; }
+      if (el === target) return { left: x, top: line * 16, width: w, height: 10 };
+      x += w;
+    }
+    return { left: 0, top: 0, width: 0, height: 0 };
+  }
+  meta.getBoundingClientRect = () => ({ width });
+  for (const el of [name, ...tags, overflow]) el.getBoundingClientRect = () => boxFor(el);
+  meta.querySelector = selector => selector === '.folio-character-name' ? name : null;
+  meta.querySelectorAll = selector => selector === '.folio-card-tag:not([hidden])'
+    ? [...tags, overflow].filter(el => !el.hidden) : [];
+  tagList.querySelectorAll = selector => selector === '.folio-card-tag:not(.folio-card-tag-overflow)' ? tags : [];
+  card.querySelector = selector => ({
+    '.folio-card-meta': meta,
+    '.folio-card-tags': tagList,
+    '.folio-card-tag-overflow': overflow,
+  })[selector] || null;
+  return { HTMLElement, card, tags, overflow };
 }
 
-test('tag layout is deferred and limited to four cards per frame', () => {
-    const f = fixture(11);
-    f.sandbox.folioTestApi.scheduleCardTagLayout(f.root);
-    assert.deepEqual(f.processed, []);
-    f.step();
-    assert.deepEqual(f.processed, [0, 1, 2, 3]);
-    f.step();
-    assert.deepEqual(f.processed, [0, 1, 2, 3, 4, 5, 6, 7]);
-    f.flush();
-    assert.deepEqual(f.processed, Array.from({ length: 11 }, (_, i) => i));
+const legacyLayoutCode = [
+  'function referenceLegacy(card) {',
+  '  const meta = card.querySelector(".folio-card-meta");',
+  '  const tagList = card.querySelector(".folio-card-tags");',
+  '  const overflowBadge = card.querySelector(".folio-card-tag-overflow");',
+  '  const badges = Array.from(tagList.querySelectorAll(".folio-card-tag:not(.folio-card-tag-overflow)"));',
+  '  for (const badge of badges) badge.hidden = false;',
+  '  overflowBadge.hidden = true;',
+  '  overflowBadge.textContent = "";',
+  '  const initialLineMap = getTagFlowLineMap(meta);',
+  '  let visibleCount = badges.findIndex(badge => (initialLineMap.get(badge) ?? Infinity) >= 2);',
+  '  if (visibleCount < 0) visibleCount = badges.length;',
+  '  if (visibleCount === badges.length) return visibleCount;',
+  '  for (let i = visibleCount; i < badges.length; i++) badges[i].hidden = true;',
+  '  overflowBadge.hidden = false;',
+  '  while (true) {',
+  '    overflowBadge.textContent = "+" + (badges.length - visibleCount);',
+  '    if (getTagFlowLineIndex(meta, overflowBadge) < 2 || visibleCount === 0) break;',
+  '    visibleCount--; badges[visibleCount].hidden = true;',
+  '  }',
+  '  return visibleCount;',
+  '}',
+].join('\n');
+
+function layoutInVM(ui) {
+  const sandbox = {
+    HTMLElement: ui.HTMLElement,
+    tr: (key, count) => 'hidden ' + count,
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(tagCode + legacyLayoutCode +
+    '\nglobalThis.api = { layoutCardTagOverflow, referenceLegacy };', sandbox);
+  return sandbox.api;
+}
+
+test('new logarithmic layout matches legacy visible tags and overflow count on varied widths', () => {
+  for (const width of [10, 13, 16, 18, 22, 25, 29]) {
+    for (let seed = 0; seed < 30; seed++) {
+      const count = 1 + seed;
+      const widths = Array.from({ length: count }, (_, i) => 2 + ((seed * 11 + i * 7) % 7));
+      const before = buildMock(width, widths);
+      const after = buildMock(width, widths);
+      const legacyApi = layoutInVM(before);
+      const improvedApi = layoutInVM(after);
+      const expected = legacyApi.referenceLegacy(before.card);
+      assert.equal(improvedApi.layoutCardTagOverflow(after.card), true);
+      const actual = after.tags.filter(tag => !tag.hidden).length;
+      assert.equal(actual, expected, 'different visible badge count; width=' + width + ' seed=' + seed);
+      assert.equal(after.card.dataset.hiddenTagCount, String(widths.length - expected));
+    }
+  }
 });
 
-test('frame budget stops after one costly card even under four-card cap', () => {
-    const f = fixture(5, 7);
-    f.sandbox.folioTestApi.scheduleCardTagLayout(f.root);
-    f.step();
-    assert.deepEqual(f.processed, [0]);
-    f.flush();
-    assert.equal(f.processed.length, 5);
+test('all cards finish in one scheduled frame, not after multi-second staggered frames', () => {
+  class HTMLElement {}
+  const cards = Array.from({ length: 35 }, (_, id) => ({ id }));
+  const root = Object.assign(new HTMLElement(), {
+    isConnected: true,
+    querySelectorAll: () => cards,
+  });
+  const scheduled = new Map();
+  const processed = [];
+  let id = 0;
+  const sandbox = {
+    HTMLElement,
+    rootElement: root,
+    runtimeRevision: 1,
+    tagLayoutFrame: null,
+    layoutCardTagOverflow: card => processed.push(card.id),
+    isRuntimeCurrent: revision => revision === 1,
+    requestAnimationFrame: callback => { scheduled.set(++id, callback); return id; },
+    cancelAnimationFrame: n => scheduled.delete(n),
+  };
+  vm.createContext(sandbox);
+  vm.runInContext(frameCode + '\nglobalThis.api = { scheduleCardTagLayout };', sandbox);
+  sandbox.api.scheduleCardTagLayout(root);
+  assert.equal(processed.length, 0);
+  assert.equal(scheduled.size, 1);
+  const fn = scheduled.values().next().value;
+  scheduled.clear(); fn();
+  assert.equal(processed.length, 35);
+  assert.equal(scheduled.size, 0);
 });
 
-test('reschedule cancels in-progress layout and prevents duplicated page work', () => {
-    const f = fixture(10);
-    f.sandbox.folioTestApi.scheduleCardTagLayout(f.root);
-    f.step();
-    assert.equal(f.processed.length, 4);
-    // A filter/page redraw schedules a new current snapshot.
-    f.sandbox.folioTestApi.scheduleCardTagLayout(f.root);
-    assert.equal(f.frames.size, 1);
-    f.flush();
-    assert.deepEqual(f.processed.slice(4), Array.from({ length: 10 }, (_, i) => i));
+test('aborted lifecycle cannot execute stale tag layout work', () => {
+  assert.match(frameCode, /isRuntimeCurrent\(operationRevision\)/);
+  assert.match(frameCode, /cancelScheduledCardTagLayout\(\)/);
+  assert.doesNotMatch(frameCode, /FOLIO_TAG_LAYOUT_FRAME_LIMIT/);
 });
 
-test('detached roots and stale lifecycle revisions do not mutate UI', () => {
-    const detached = fixture(9);
-    detached.sandbox.folioTestApi.scheduleCardTagLayout(detached.root);
-    detached.root.isConnected = false;
-    detached.flush();
-    assert.equal(detached.processed.length, 0);
-
-    const stale = fixture(9);
-    stale.sandbox.folioTestApi.scheduleCardTagLayout(stale.root);
-    stale.sandbox.runtimeRevision = 2;
-    stale.flush();
-    assert.equal(stale.processed.length, 0);
-});
-
-test('a page without tag badges schedules no work', () => {
-    const f = fixture(0);
-    f.sandbox.folioTestApi.scheduleCardTagLayout(f.root);
-    assert.equal(f.frames.size, 0);
-});
-
-test('full original tag-overflow implementation and pagination remain intact', () => {
-    assert.match(source, /function layoutCardTagOverflow\(card\)/);
-    assert.match(source, /function getTagFlowLineMap\(meta\)/);
-    assert.match(source, /function getTagFlowLineIndex\(meta, target\)/);
-    assert.match(source, /function renderCharacterGrid\(/);
-    assert.match(source, /function observePortrait\(/);
-    assert.match(source, /function renderChatRows\(/);
-    assert.match(schedulerSource, /layoutCardTagOverflow\(card\)/);
-    assert.match(schedulerSource, /cancelScheduledCardTagLayout\(\);/);
+test('no card data, portrait, chat list, notes or pin functions are changed', () => {
+  assert.match(source, /function renderCharacterGrid\(/);
+  assert.match(source, /function observePortrait\(/);
+  assert.match(source, /function renderChatRows\(/);
+  assert.match(source, /function getStoredNotes\(/);
+  assert.match(source, /function savePinnedChatIds\(/);
 });
