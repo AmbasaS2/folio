@@ -918,7 +918,7 @@
     -webkit-line-clamp: 2;
 }
 
-.folio-chat-delete {
+.folio-chat-action {
     display: grid;
     width: 36px;
     min-width: 36px;
@@ -936,14 +936,14 @@
     transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
 }
 
-.folio-chat-item:hover .folio-chat-delete,
-.folio-chat-item:focus-within .folio-chat-delete,
-.folio-chat-delete:focus-visible {
+.folio-chat-item:hover .folio-chat-action,
+.folio-chat-item:focus-within .folio-chat-action,
+.folio-chat-action:focus-visible {
     opacity: 1;
 }
 
-.folio-chat-delete:hover,
-.folio-chat-delete:focus-visible {
+.folio-chat-action:hover,
+.folio-chat-action:focus-visible {
     background: color-mix(in srgb, var(--SmartThemeEmColor) 12%, transparent);
     color: var(--SmartThemeEmColor);
 }
@@ -1378,7 +1378,7 @@
         transform: none;
     }
 
-    .folio-chat-delete {
+    .folio-chat-action {
         display: none;
     }
 }
