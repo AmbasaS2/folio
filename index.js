@@ -2225,15 +2225,30 @@ function renderChatRows(container, character, chats) {
                 void openExistingChat(character, chat.fileId, row);
             });
 
-            const remove = createElement('button', 'folio-chat-delete', '×');
+            const rename = createElement('button', 'folio-chat-action folio-chat-rename');
+            rename.type = 'button';
+            rename.setAttribute('aria-label', `${tr('rename.title')}: ${chat.title}`);
+            rename.title = tr('rename.title');
+            const renameIcon = createElement('i', 'fa-solid fa-pencil');
+            renameIcon.setAttribute('aria-hidden', 'true');
+            rename.appendChild(renameIcon);
+            rename.addEventListener('click', event => {
+                event.stopPropagation();
+                void requestRenameChat(character, chat, rename);
+            });
+
+            const remove = createElement('button', 'folio-chat-action folio-chat-delete');
             remove.type = 'button';
             remove.setAttribute('aria-label', tr('chat.deleteLabel', chat.title));
             remove.title = tr('chat.deleteTitle');
+            const removeIcon = createElement('i', 'fa-solid fa-trash-can');
+            removeIcon.setAttribute('aria-hidden', 'true');
+            remove.appendChild(removeIcon);
             remove.addEventListener('click', event => {
                 event.stopPropagation();
                 void requestDeleteChat(character, chat, remove);
             });
-            item.append(row, remove);
+            item.append(row, rename, remove);
             list.appendChild(item);
         }
         content.appendChild(list);
