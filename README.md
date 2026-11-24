@@ -55,7 +55,7 @@ Portraits are loaded as they approach the visible area. If a portrait cannot be 
 Clicking a character opens a drawer containing that character's saved chat filenames.
 
 <p align="center">
-  <a href="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp"><img src="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp" alt="Folio chat drawer screenshot with guidance for chat searching, pinning, renaming, deleting, and starting chats" width="860" /></a>
+  <a href="assets/readme/mobile/folio-chat-drawer-guide-mobile.png"><img src="assets/readme/mobile/folio-chat-drawer-guide-mobile.png" alt="Folio chat drawer: search, pin, rename, delete, and mobile long-press menu (v1.5.7 UI illustration)" width="860" /></a>
 </p>
 
 | Control or action | What it does |
@@ -175,7 +175,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 캐릭터를 누르면 그 캐릭터에게 저장된 채팅 파일명이 서랍에 표시됩니다.
 
 <p align="center">
-  <a href="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp"><img src="assets/readme/mobile/folio-chat-drawer-guide-mobile.webp" alt="실제 폴리오 채팅 서랍과 저장된 채팅 검색·고정·이름 바꾸기·삭제·새 대화 시작 안내" width="860" /></a>
+  <a href="assets/readme/mobile/folio-chat-drawer-guide-mobile.png"><img src="assets/readme/mobile/folio-chat-drawer-guide-mobile.png" alt="폴리오 채팅 서랍의 검색·고정·이름 변경·삭제와 모바일 길게 누르기 메뉴 (v1.5.7 UI 구성 예시)" width="860" /></a>
 </p>
 
 | 조작 | 기능 |
