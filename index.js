@@ -1328,10 +1328,7 @@ function observeTagLayout(expectedRoot = rootElement) {
     if (!(expectedRoot instanceof HTMLElement)) return;
     const grid = expectedRoot.querySelector('.folio-grid');
     if (!(grid instanceof HTMLElement)) return;
-    if (tagLayoutObservedGrid === grid) {
-        scheduleCardTagLayout(expectedRoot);
-        return;
-    }
+    if (tagLayoutObservedGrid === grid) return;
 
     disconnectTagLayoutObserver();
     tagLayoutObservedGrid = grid;
@@ -1352,7 +1349,7 @@ function observeTagLayout(expectedRoot = rootElement) {
         globalThis.addEventListener('resize', tagLayoutResizeHandler, { passive: true });
     }
     const fontReady = globalThis.document?.fonts?.ready;
-    if (fontReady && typeof fontReady.then === 'function') {
+    if (globalThis.document?.fonts?.status === 'loading' && typeof fontReady?.then === 'function') {
         tagLayoutFontReadyRoot = expectedRoot;
         void fontReady.then(() => {
             if (
