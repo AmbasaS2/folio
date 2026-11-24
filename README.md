@@ -64,7 +64,7 @@ Clicking a character opens a drawer containing that character's saved chat filen
 | **Search chat titles** | Filters already-loaded chat titles for the selected character without scanning messages or making requests on each keystroke. |
 | **Click a chat title** | Opens the selected chat through SillyTavern. |
 | **Long-press or right-click a chat title** | Opens pin/unpin, rename, and delete actions. Pinned chats are stored per character; pins follow renames and are removed when chats are deleted. |
-| Desktop hover `×` beside a chat | Deletes that chat after confirmation. Touch devices use the long-press menu instead. |
+| **Desktop hover or keyboard focus on a chat row** | Reveals the pencil (rename) and trash-can (delete) buttons together. Deletion requires confirmation. Touch devices use the long-press menu instead. |
 | **New Chat** | Selects the character and starts a new chat. |
 | **Page controls** | Moves between chat pages when the list exceeds the selected page size. |
 
@@ -184,7 +184,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 | **채팅방 이름 검색** | 선택한 캐릭터의 이미 불러온 채팅방 이름을 검색합니다. 입력할 때 새 파일을 열거나 추가 요청을 보내지 않습니다. |
 | **채팅 제목 클릭** | 선택한 채팅을 SillyTavern에서 엽니다. |
 | **채팅 제목 길게 누르기 또는 우클릭** | **상단 고정·고정 해제**, 이름 바꾸기, 삭제 메뉴를 엽니다. 고정은 캐릭터별로 저장하고 이름을 바꾸면 따라가며, 채팅방을 삭제하면 고정도 정리합니다. |
-| 데스크톱에서 채팅에 마우스를 올리면 나타나는 `×` | 확인 후 해당 채팅을 삭제합니다. 터치 기기에서는 길게 누르기 메뉴를 사용합니다. |
+| **데스크톱에서 채팅에 마우스를 올리거나 키보드 포커스 이동** | 연필(이름 변경)과 휴지통(삭제) 버튼이 함께 나타납니다. 삭제는 확인 후 진행합니다. 터치 기기에서는 기존 길게 누르기 메뉴를 사용합니다. |
 | **새 대화 시작** | 캐릭터를 선택하고 새 채팅을 시작합니다. |
 | **페이지 버튼** | 채팅 목록이 설정한 페이지당 개수를 넘으면 채팅 페이지를 이동합니다. |
 
