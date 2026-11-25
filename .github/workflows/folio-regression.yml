@@ -1,0 +1,19 @@
+name: Folio regression
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright-core@1.57.0
+      - run: npx playwright-core install --with-deps chromium
+      - run: node --test tests/folio-regression.test.mjs
