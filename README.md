@@ -13,9 +13,13 @@ It adds a visual character shelf to the SillyTavern welcome screen, where you ca
 
 ## 📥 Installation
 
+**Current version: 1.5.7.**
+
 1. Open **Extensions → Install extension** in SillyTavern (the option may appear under extension management).
 2. Paste `https://github.com/AmbasaS2/folio` and install.
 3. Reload SillyTavern, then open the welcome screen to use the Folio character shelf.
+
+**Optional:** If native Recent Chats slows the welcome screen, reduce its two display counts to 1. Folio itself works without changing that setting.
 
 
 ## 🧭 How it works
@@ -133,9 +137,13 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 
 ## 📥 설치 방법
 
+**현재 버전: 1.5.7.**
+
 1. SillyTavern의 **확장 프로그램 → 확장 설치** 메뉴를 엽니다. 버전에 따라 확장 관리 메뉴 안에 있을 수 있습니다.
 2. `https://github.com/AmbasaS2/folio`를 붙여넣고 설치합니다.
 3. SillyTavern을 새로고침한 뒤 시작 화면에서 폴리오 캐릭터 선반을 사용합니다.
+
+**선택:** 기본 Recent Chats 로딩이 느리다면 그 설정의 두 표시 개수를 1로 줄여 보세요. Folio 자체를 사용하기 위한 필수 조건은 아닙니다.
 
 
 ## 🧭 사용 순서
