@@ -8,11 +8,11 @@ It adds a visual character shelf to the SillyTavern welcome screen, where you ca
 ## 📸 Screenshots
 
 <p align="center">
-  <a href="assets/readme/folio-desktop.png"><img src="assets/readme/folio-desktop.png" alt="Folio desktop and mobile character shelf preview" width="640" /></a>
+  <a href="assets/readme/guides/preview.webp"><img src="assets/readme/guides/preview.webp" alt="캐릭터 선반 / Character shelf" width="640" /></a>
 </p>
 
 <p align="center">
-  <a href="assets/readme/folio-mobile.jpeg"><img src="assets/readme/folio-mobile.jpeg" alt="Folio desktop and mobile character shelf preview" width="540" /></a>
+  <a href="assets/readme/guides/mobile.webp"><img src="assets/readme/guides/mobile.webp" alt="모바일 선반 / Mobile shelf" width="640" /></a>
 </p>
 
 ## 📥 Installation
@@ -35,6 +35,10 @@ It adds a visual character shelf to the SillyTavern welcome screen, where you ca
 The welcome shelf is built from the character list SillyTavern has already loaded. A character's chat filenames are requested only after you explicitly open that character's chat drawer.
 
 ## 🗂️ Character shelf
+
+<p align="center">
+  <a href="assets/readme/guides/shelf.webp"><img src="assets/readme/guides/shelf.webp" alt="캐릭터 선반 조작 / Character shelf controls" width="640" /></a>
+</p>
 
 Each character card shows the portrait, name, assigned SillyTavern tags, and an optional personal note.
 
@@ -59,7 +63,7 @@ Portraits are loaded as they approach the visible area. If a portrait cannot be 
 Clicking a character opens a drawer containing that character's saved chat filenames.
 
 <p align="center">
-  <a href="assets/readme/folio-chat-drawer.png"><img src="assets/readme/folio-chat-drawer.png" alt="Folio chat drawer: search, pin, rename, delete, and mobile long-press menu" width="540" /></a>
+  <a href="assets/readme/guides/drawer.webp"><img src="assets/readme/guides/drawer.webp" alt="채팅 서랍 / Chat drawer" width="640" /></a>
 </p>
 
 | Control or action | What it does |
@@ -79,7 +83,7 @@ Renaming requires a non-empty name and will not overwrite another chat with the 
 Configure Folio under **Extensions → Folio**.
 
 <p align="center">
-  <a href="assets/readme/screenshots/folio-settings-current.webp"><img src="assets/readme/screenshots/folio-settings-current.webp" alt="Current settings UI (test environment)" width="540" /></a>
+  <a href="assets/readme/guides/settings.webp"><img src="assets/readme/guides/settings.webp" alt="배치 설정 / Layout settings" width="640" /></a>
   <br /><sub>Current-version UI · test environment</sub>
 </p>
 
@@ -133,11 +137,11 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 ## 📸 화면
 
 <p align="center">
-  <a href="assets/readme/folio-desktop.png"><img src="assets/readme/folio-desktop.png" alt="폴리오 PC·모바일 캐릭터 선반 미리보기" width="640" /></a>
+  <a href="assets/readme/guides/preview.webp"><img src="assets/readme/guides/preview.webp" alt="캐릭터 선반 / Character shelf" width="640" /></a>
 </p>
 
 <p align="center">
-  <a href="assets/readme/folio-mobile.jpeg"><img src="assets/readme/folio-mobile.jpeg" alt="폴리오 PC·모바일 캐릭터 선반 미리보기" width="540" /></a>
+  <a href="assets/readme/guides/mobile.webp"><img src="assets/readme/guides/mobile.webp" alt="모바일 선반 / Mobile shelf" width="640" /></a>
 </p>
 
 ## 📥 설치 방법
@@ -160,6 +164,10 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 시작 화면의 캐릭터 선반은 SillyTavern이 이미 불러온 캐릭터 목록으로 만듭니다. 캐릭터의 채팅 파일명은 사용자가 해당 캐릭터의 채팅 서랍을 직접 열었을 때만 요청합니다.
 
 ## 🗂️ 캐릭터 선반
+
+<p align="center">
+  <a href="assets/readme/guides/shelf.webp"><img src="assets/readme/guides/shelf.webp" alt="캐릭터 선반 조작 / Character shelf controls" width="640" /></a>
+</p>
 
 각 캐릭터 카드에는 초상화, 이름, SillyTavern에 지정된 태그와 선택적으로 작성한 개인 메모가 표시됩니다.
 
@@ -184,7 +192,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 캐릭터를 누르면 그 캐릭터에게 저장된 채팅 파일명이 서랍에 표시됩니다.
 
 <p align="center">
-  <a href="assets/readme/folio-chat-drawer.png"><img src="assets/readme/folio-chat-drawer.png" alt="폴리오 채팅 서랍의 검색·고정·이름 변경·삭제와 모바일 길게 누르기 메뉴" width="540" /></a>
+  <a href="assets/readme/guides/drawer.webp"><img src="assets/readme/guides/drawer.webp" alt="채팅 서랍 / Chat drawer" width="640" /></a>
 </p>
 
 | 조작 | 기능 |
@@ -204,7 +212,7 @@ SillyTavern 시작 화면에 캐릭터 선반을 추가해, 먼저 캐릭터를 
 **Extensions → Folio**에서 설정합니다.
 
 <p align="center">
-  <a href="assets/readme/screenshots/folio-settings-current.webp"><img src="assets/readme/screenshots/folio-settings-current.webp" alt="현재 버전 설정 화면 (테스트 환경)" width="540" /></a>
+  <a href="assets/readme/guides/settings.webp"><img src="assets/readme/guides/settings.webp" alt="배치 설정 / Layout settings" width="640" /></a>
   <br /><sub>현재 버전 UI · 테스트 환경</sub>
 </p>
 
